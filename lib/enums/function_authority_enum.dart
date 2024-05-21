@@ -1,0 +1,1 @@
+enum FunctionAuthority { general, user }

@@ -1,0 +1,10 @@
+{
+  "@@locale": "en",
+  "ttt": "TTT",
+  "username": "Username",
+  "hashtag": "Hashtag",
+  "search": "Search",
+  "error": "Error",
+  "emptyFieldError": "Empty fields",
+  "networkError": "Unknown error"
+}
