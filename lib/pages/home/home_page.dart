@@ -11,8 +11,8 @@ import 'package:flutter_modular/flutter_modular.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({
-    super.key,
-  });
+    Key? key,
+  }) : super(key: key);
 
   static const String url = '/';
   static const String route = '/home/';
@@ -35,55 +35,86 @@ class HomePage extends StatelessWidget {
               }
 
               // Construye la ruta de la imagen basada en el rango
-              String? tier = state.soloQRank?.tier?.toLowerCase();
+              String? tier = state.soloQRank?.tier.toLowerCase();
               String imagePath = tier != null
                   ? 'images/$tier.png'
-                  : 'images/default.png';// Ruta de imagen por defecto si tier es null
-
+                  : 'images/default.png'; // Ruta de imagen por defecto si tier es null
 
               return Scaffold(
                 backgroundColor: CustomColor.get.white,
-                body: Center(
+                body: SafeArea(
                   child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      ConstrainedBox(
-                        constraints: BoxConstraints(
-                          maxHeight: MediaQuery.sizeOf(context).height * .3,
-                        ),
-                        child: Image.asset(
-                          imagePath,
-                          width: MediaQuery.sizeOf(context).width * .3,
+                      Padding(
+                        padding: const EdgeInsets.all(16.0), // Añadir espacio en todas las direcciones
+                        child: Row(
+                          children: [
+                            // Mostrar el icono del perfil si está disponible
+                            if (state.profileIconId != null)
+                              CircleAvatar(
+                                backgroundImage: NetworkImage(
+                                  'https://ddragon.leagueoflegends.com/cdn/14.10.1/img/profileicon/${state.profileIconId}.png',
+                                ),
+                              ),
+                            SizedBox(width: 16), // Espacio entre el avatar y el resto del contenido
+                            Text(
+                              'Welcome', // Puedes personalizar el texto aquí
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            Spacer(), // Espaciado flexible para colocar los elementos a la derecha
+                          ],
                         ),
                       ),
-                      IconButton(
-                        onPressed: () => ReadContext(context).read<HomeCubit>().setLogout(),
-                        icon: Icon(Icons.arrow_back_rounded, color: CustomColor.get.light_pink),
-                      ),
-                      state.soloQRank != null || state.flexQRank != null
-                          ? Column(
-                        children: [
-                          Text(
-                            'SoloQ Rank: ${state.soloQRank?.tier} ${state.soloQRank?.rank} ${state.soloQRank?.leaguePoints}',
-                            style: TextStyle(
-                              color: CustomColor.get.light_pink,
-                              fontFamily: CustomFonts.get.oxygen_bold,
-                            ),
+                      Expanded(
+                        child: Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              ConstrainedBox(
+                                constraints: BoxConstraints(
+                                  maxHeight: MediaQuery.of(context).size.height * 0.3,
+                                ),
+                                child: Image.asset(
+                                  imagePath,
+                                  width: MediaQuery.of(context).size.width * 0.3,
+                                ),
+                              ),
+                              IconButton(
+                                onPressed: () => BlocProvider.of<HomeCubit>(context).setLogout(),
+                                icon: Icon(Icons.arrow_back_rounded, color: CustomColor.get.light_pink),
+                              ),
+
+                              state.soloQRank != null || state.flexQRank != null
+                                  ? Column(
+                                children: [
+                                  Text(
+                                    'SoloQ Rank: ${state.soloQRank?.tier} ${state.soloQRank?.rank} ${state.soloQRank?.leaguePoints} LPs',
+                                    style: TextStyle(
+                                      color: CustomColor.get.light_pink,
+                                      fontFamily: CustomFonts.get.oxygen_bold,
+                                    ),
+                                  ),
+                                  Text(
+                                    'FlexQ Rank: ${state.flexQRank?.tier} ${state.flexQRank?.rank} ${state.flexQRank?.leaguePoints} LPs',
+                                    style: TextStyle(
+                                      color: CustomColor.get.light_pink,
+                                      fontFamily: CustomFonts.get.oxygen_bold,
+                                    ),
+                                  ),
+                                ],
+                              )
+                                  : Loader(),
+                              // Botón de refresh sin acción
+                              IconButton(
+                                onPressed: () {},
+                                icon: Icon(Icons.refresh, color: CustomColor.get.light_pink),
+                              ),
+                            ],
                           ),
-                          Text(
-                            'FlexQ Rank: ${state.flexQRank?.tier} ${state.flexQRank?.rank} ${state.flexQRank?.leaguePoints}',
-                            style: TextStyle(
-                              color: CustomColor.get.light_pink,
-                              fontFamily: CustomFonts.get.oxygen_bold,
-                            ),
-                          ),
-                        ],
-                      )
-                          : Loader(),
-                      // Botón de refresh sin acción
-                      IconButton(
-                        onPressed: () {},
-                        icon: Icon(Icons.refresh, color: CustomColor.get.light_pink),
+                        ),
                       ),
                     ],
                   ),

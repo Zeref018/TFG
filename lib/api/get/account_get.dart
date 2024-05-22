@@ -21,6 +21,22 @@ class AccountGetters {
 
     return Id;
   }
+  Future<String?> getProfileIconId(String uuid) async {
+    http.Response response;
+    String? profileIconId; // Cambio el nombre de ProfileIconId a profileIconId
+
+    response = await PhpApiRepository().get(function: MapKeys.function.get_account_id, uri: '/$uuid?api_key=${GeneralConfiguration.get.api_key}');
+
+    if (response.statusCode == ResponseCodes.get.success) {
+      Map map = json.decode(response.body);
+      // Convertir el valor a una cadena
+      profileIconId = map[MapKeys.body.profile_Icon_Id].toString();
+      return profileIconId;
+    }
+
+    return profileIconId;
+  }
+
 
   Future<String?> getUuid(String username, String hashtag) async {
     http.Response response;
@@ -61,3 +77,4 @@ class AccountGetters {
 //YSKM #Zrf
 
 //imagenes: https://ddragon.leagueoflegends.com/cdn/14.10.1/img/champion/Aatrox.png
+//icono de la cuenta: https://ddragon.leagueoflegends.com/cdn/14.10.1/img/profileicon/6330.png

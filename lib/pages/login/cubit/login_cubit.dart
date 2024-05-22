@@ -31,6 +31,7 @@ class LoginCubit extends Cubit<LoginState> {
       await preferencesRepository.setUuid(uuid);
       M.uuid = uuid;
       String? accountId = await AccountGetters().getId(uuid);
+
       if (accountId != null && accountId.isNotEmpty) {
         await preferencesRepository.setAccountId(accountId);
         M.accountId = accountId;
