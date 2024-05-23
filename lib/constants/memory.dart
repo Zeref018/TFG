@@ -6,4 +6,7 @@ class M {
   static String? rank;
 
   static String languageCode = 'es';
+
+  static String patch = '14.10.1';
+
 }

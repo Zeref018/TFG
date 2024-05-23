@@ -30,6 +30,11 @@ class LoginCubit extends Cubit<LoginState> {
       final preferencesRepository = PreferencesRepository();
       await preferencesRepository.setUuid(uuid);
       M.uuid = uuid;
+
+      // Guardar el username y el hashtag en PreferencesRepository
+      await preferencesRepository.setUsername(state.usernameInput!.text);
+      await preferencesRepository.setHashtag(state.hashtagInput!.text);
+
       String? accountId = await AccountGetters().getId(uuid);
 
       if (accountId != null && accountId.isNotEmpty) {

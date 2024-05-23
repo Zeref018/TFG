@@ -8,6 +8,8 @@ import 'package:tfg/pages/login/login_page.dart';
 import 'package:tfg/widgets/loader.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_modular/flutter_modular.dart';
+import 'package:tfg/constants/memory.dart'; // Asegúrate de importar M
+import 'package:tfg/repositories/preferences_repository.dart'; // Importa el PreferencesRepository
 
 class HomePage extends StatelessWidget {
   const HomePage({
@@ -53,16 +55,41 @@ class HomePage extends StatelessWidget {
                             if (state.profileIconId != null)
                               CircleAvatar(
                                 backgroundImage: NetworkImage(
-                                  'https://ddragon.leagueoflegends.com/cdn/14.10.1/img/profileicon/${state.profileIconId}.png',
+                                  'https://ddragon.leagueoflegends.com/cdn/${M.patch}/img/profileicon/${state.profileIconId}.png',
                                 ),
                               ),
                             SizedBox(width: 16), // Espacio entre el avatar y el resto del contenido
-                            Text(
-                              'Welcome', // Puedes personalizar el texto aquí
-                              style: TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                              ),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                FutureBuilder<String?>(
+                                  future: PreferencesRepository().getUsername(), // Obtén el username del PreferencesRepository
+                                  builder: (context, usernameSnapshot) {
+                                    if (usernameSnapshot.connectionState == ConnectionState.waiting) {
+                                      return CircularProgressIndicator(); // Muestra un indicador de carga mientras se obtiene el username
+                                    } else {
+                                      String username = usernameSnapshot.data ?? ''; // Valor predeterminado para el username
+                                      return FutureBuilder<String?>(
+                                        future: PreferencesRepository().getHashtag(), // Obtén el hashtag del PreferencesRepository
+                                        builder: (context, hashtagSnapshot) {
+                                          if (hashtagSnapshot.connectionState == ConnectionState.waiting) {
+                                            return CircularProgressIndicator(); // Muestra un indicador de carga mientras se obtiene el hashtag
+                                          } else {
+                                            String hashtag = hashtagSnapshot.data ?? ''; // Valor predeterminado para el hashtag
+                                            return Text(
+                                              '$username#$hashtag', // Muestra el username y el hashtag en una sola línea
+                                              style: TextStyle(
+                                                fontSize: 20,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            );
+                                          }
+                                        },
+                                      );
+                                    }
+                                  },
+                                ),
+                              ],
                             ),
                             Spacer(), // Espaciado flexible para colocar los elementos a la derecha
                           ],
@@ -86,7 +113,6 @@ class HomePage extends StatelessWidget {
                                 onPressed: () => BlocProvider.of<HomeCubit>(context).setLogout(),
                                 icon: Icon(Icons.arrow_back_rounded, color: CustomColor.get.light_pink),
                               ),
-
                               state.soloQRank != null || state.flexQRank != null
                                   ? Column(
                                 children: [

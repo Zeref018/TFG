@@ -8,4 +8,10 @@ class _PreferencesKeys {
   String get user_account_id => 'user_account_id';
 
   String get user_uuid => 'user_uuid';
+
+  String get user_username => 'user_username';
+
+  String get user_hashtag => 'user_hashtag';
+
+
 }
