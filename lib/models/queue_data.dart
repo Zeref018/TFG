@@ -1,12 +1,12 @@
 class QueueData {
-  final String leagueId;
-  final String summonerId;
-  final String queueType;
-  final String rank;
-  final String tier;
-  final int leaguePoints;
-  final int wins;
-  final int losses;
+  final String? leagueId;
+  final String? summonerId;
+  final String? queueType;
+  final String? rank;
+  final String? tier;
+  final int? leaguePoints;
+  final int? wins;
+  final int? losses;
 
   QueueData(this.leagueId, this.summonerId, this.queueType, this.rank, this.tier, this.leaguePoints, this.wins, this.losses);
 
@@ -16,8 +16,8 @@ class QueueData {
     map['queueType'],
     map['rank'],
     map['tier'],
-    int.parse(map['leaguePoints'].toString()),
-    int.parse(map['wins'].toString()),
-    int.parse(map['losses'].toString()),
+    map['leaguePoints'] != null ? int.parse(map['leaguePoints'].toString()) : null,
+    map['wins'] != null ? int.parse(map['wins'].toString()) : null,
+    map['losses'] != null ? int.parse(map['losses'].toString()) : null,
   );
 }
