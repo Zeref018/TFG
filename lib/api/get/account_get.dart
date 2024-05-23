@@ -75,6 +75,7 @@ class AccountGetters {
 }
 //Sakurajima Mai #fito1
 //YSKM #Zrf
+//QUΑNDALE DlNGLE #EUW
 
 //imagenes: https://ddragon.leagueoflegends.com/cdn/14.10.1/img/champion/Aatrox.png
 //icono de la cuenta: https://ddragon.leagueoflegends.com/cdn/14.10.1/img/profileicon/6330.png
