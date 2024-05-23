@@ -78,3 +78,5 @@ class AccountGetters {
 
 //imagenes: https://ddragon.leagueoflegends.com/cdn/14.10.1/img/champion/Aatrox.png
 //icono de la cuenta: https://ddragon.leagueoflegends.com/cdn/14.10.1/img/profileicon/6330.png
+//git push origin master:main
+// se puede añadir --force al final
