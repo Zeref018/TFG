@@ -27,6 +27,7 @@ dev_dependencies:
   build_runner: ^2.4.6
 
 flutter:
+  generate: true
   uses-material-design: true
 
   fonts:
@@ -39,9 +40,23 @@ flutter:
     - family: Oxygen Regular
       fonts:
         - asset: fonts/Oxygen-Regular.ttf
+
   assets:
-    - images/
-  generate: true
+    - images/default.png
+    - images/DIAMOND.png
+    - images/BRONZE.png
+    - images/SILVER.png
+    - images/GOLD.png
+    # Añade aquí todas las imágenes que estás utilizando
+    - images/PLATINUM.png
+    - images/MASTER.png
+    - images/GRANDMASTER.png
+    - images/CHALLENGER.png
+    - images/aery.png
+    # Asegúrate de que esta lista incluya todas las imágenes que necesitas
+
+
+
 
 flutter_intl:
   enabled: true

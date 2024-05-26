@@ -10,4 +10,8 @@ class _FunctionKeys {
   String get get_account_id => 'getAccountId';
 
   String get get_rank => 'getRank';
+
+  String get get_game => 'getGame';
+
+  String get get_match => 'getMatch';
 }

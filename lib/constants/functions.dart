@@ -15,6 +15,7 @@ class Functions {
   String get GROUP_SUMMONERS => '/summoner/v4/summoners';
   String get GROUP_ACCOUNTS => '/account/v1/accounts';
   String get GROUP_RANK => '/league/v4/entries';
+  String get GROUP_GAME =>'/match/v5/matches';
 
   String get _function_get_uuid => '$API_RIOT$GROUP_ACCOUNTS/by-riot-id';
 
@@ -22,10 +23,16 @@ class Functions {
 
   String get _function_get_rank => '$API_LOL$GROUP_RANK/by-summoner';
 
+  String get _function_get_game => '$API_LOL$GROUP_GAME/by-puuid';
+
+  String get _function_get_match => '$API_LOL$GROUP_GAME';
+
   Map<String, ApiFunction> get _functions => {
         MapKeys.function.get_uuid: ApiFunction(_function_get_uuid, FunctionAuthority.general),
         MapKeys.function.get_account_id: ApiFunction(_function_get_account_id, FunctionAuthority.general),
         MapKeys.function.get_rank: ApiFunction(_function_get_rank, FunctionAuthority.general),
+        MapKeys.function.get_game: ApiFunction(_function_get_game, FunctionAuthority.general),
+        MapKeys.function.get_match: ApiFunction(_function_get_match, FunctionAuthority.general),
       };
 
   ApiFunction? function(String key) => _functions[key];

@@ -6,6 +6,8 @@ import 'package:tfg/constants/general_configuration.dart';
 import 'package:tfg/constants/map_keys/map_keys.dart';
 import 'package:tfg/constants/response_codes.dart';
 import 'package:tfg/models/queue_data.dart';
+import 'package:tfg/models/match_details.dart';
+
 
 class AccountGetters {
   Future<String?> getId(String uuid) async {
@@ -71,6 +73,39 @@ class AccountGetters {
     }
 
     return queueData;
+  }
+
+  Future<List<String>?> getGames(String uuid) async {
+    http.Response response;
+    List<String>? games;
+
+    response = await PhpApiRepository().get(function: MapKeys.function.get_game, uri: '/$uuid/ids?start=0&count=20&api_key=${GeneralConfiguration.get.api_key}', isEuw: false);
+
+    if (response.statusCode == ResponseCodes.get.success) {
+      List<dynamic> list = json.decode(response.body);
+      games = List<String>.from(list);
+      return games;
+    }
+
+    return null;
+  }
+
+  Future<List<MatchDetails>?> getMatchDetails(List<String> matchIds) async {
+    List<MatchDetails> matchDetailsList = [];
+
+    for (String matchId in matchIds) {
+      http.Response response  = await PhpApiRepository().get(function: MapKeys.function.get_match, uri: '/$matchId?api_key=${GeneralConfiguration.get.api_key}', isEuw: false);
+
+
+      if (response.statusCode == ResponseCodes.get.success) {
+        Map<String, dynamic> map = json.decode(response.body);
+        matchDetailsList.add(MatchDetails.fromMap(map));
+      } else {
+        // Manejar el error o la excepción
+      }
+    }
+
+    return matchDetailsList;
   }
 }
 //Sakurajima Mai #fito1

@@ -17,5 +17,7 @@ class _BodyKeys {
 
   String get rank => 'rank';
 
+  String get game => 'game';
+
   String get profile_Icon_Id => 'profileIconId';
 }

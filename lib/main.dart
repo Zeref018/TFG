@@ -3,6 +3,7 @@ import 'package:tfg/base_cubit/base_cubit.dart';
 import 'package:tfg/constants/memory.dart';
 import 'package:tfg/modules/app_module.dart';
 import 'package:tfg/pages/home/home_page.dart';
+import 'package:tfg/pages/match_history/match_history_page.dart'; // Importa la página de historial de partidas
 import 'package:tfg/repositories/preferences_repository.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_modular/flutter_modular.dart';
@@ -19,19 +20,20 @@ void main() async {
   }
 
   runApp(ModularApp(
-      module: AppModule(),
-      child: BlocProvider(
-        create: (context) => BaseCubit(),
-        child: BlocBuilder<BaseCubit, BaseState>(
-          builder: (context, state) {
-            return BaseApp();
-          },
-        ),
-      )));
+    module: AppModule(),
+    child: BlocProvider(
+      create: (context) => BaseCubit(),
+      child: BlocBuilder<BaseCubit, BaseState>(
+        builder: (context, state) {
+          return BaseApp();
+        },
+      ),
+    ),
+  ));
 }
 
 class BaseApp extends StatelessWidget {
-  const BaseApp({super.key});
+  const BaseApp({Key? key});
 
   @override
   Widget build(BuildContext context) {
