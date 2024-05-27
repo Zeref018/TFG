@@ -5,6 +5,6 @@ class CustomImages {
 
   static const CustomImages get = CustomImages();
 
-  String get logo => 'images/aery.png';
+  String get logo => 'images/logo.png';
 
 }

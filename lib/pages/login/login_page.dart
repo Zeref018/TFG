@@ -19,7 +19,7 @@ class LoginPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: CustomColor.get.white,
+      backgroundColor: Colors.grey[850],
       body: BlocProvider(
         create: (_) => LoginCubit(),
         child: BlocBuilder<LoginCubit, LoginState>(
@@ -42,16 +42,7 @@ class LoginPage extends StatelessWidget {
                           ConstrainedBox(
                               constraints: BoxConstraints(maxHeight: MediaQuery.sizeOf(context).height * .3),
                               child: Image.asset(CustomImages.get.logo, width: MediaQuery.sizeOf(context).width * .3)),
-                          SizedBox(
-                            width: MediaQuery.sizeOf(context).width * .35,
-                            child: FittedBox(
-                              fit: BoxFit.scaleDown,
-                              child: Text(
-                                Intl.message('ttt'),
-                                style: TextStyle(fontFamily: CustomFonts.get.oxygen_bold, color: CustomColor.get.light_grey, fontSize: 60),
-                              ),
-                            ),
-                          ),
+
                         ],
                       ),
                       Padding(
@@ -60,38 +51,52 @@ class LoginPage extends StatelessWidget {
                           children: [
                             Padding(
                               padding: const EdgeInsets.only(bottom: 10),
-                              child: FormInput(
-                                controller: state.usernameInput!,
-                                textInputType: TextInputType.text,
-                                icon: Icons.person,
-                                iconColor: CustomColor.get.light_pink,
-                                labelText: Intl.message('username'),
-                                borderRadius: 20,
-                                alignWithLabel: false,
-                                contentPadding: const EdgeInsets.all(20),
+                              child: Theme(
+                                data: ThemeData(
+                                  inputDecorationTheme: InputDecorationTheme(
+                                    labelStyle: TextStyle(color: Colors.white),
+                                  ),
+                                ),
+                                child: FormInput(
+                                  controller: state.usernameInput!,
+                                  textInputType: TextInputType.text,
+                                  icon: Icons.person,
+                                  iconColor: Colors.blueAccent,
+                                  labelText: Intl.message('username'),
+                                  borderRadius: 20,
+                                  alignWithLabel: false,
+                                  contentPadding: const EdgeInsets.all(20),
+                                ),
                               ),
                             ),
                             Padding(
                               padding: const EdgeInsets.only(bottom: 5),
-                              child: FormInput(
-                                controller: state.hashtagInput!,
-                                textInputType: TextInputType.text,
-                                icon: Icons.lock,
-                                iconColor: CustomColor.get.light_pink,
-                                labelText: Intl.message('hashtag'),
-                                borderRadius: 20,
-                                alignWithLabel: false,
-                                contentPadding: const EdgeInsets.all(20),
+                              child: Theme(
+                                data: ThemeData(
+                                  inputDecorationTheme: InputDecorationTheme(
+                                    labelStyle: TextStyle(color: Colors.white),
+                                  ),
+                                ),
+                                child: FormInput(
+                                  controller: state.hashtagInput!,
+                                  textInputType: TextInputType.text,
+                                  icon: Icons.lock,
+                                  iconColor: Colors.blueAccent,
+                                  labelText: Intl.message('hashtag'),
+                                  borderRadius: 20,
+                                  alignWithLabel: false,
+                                  contentPadding: const EdgeInsets.all(20),
+                                ),
                               ),
                             ),
                             state.error != null
                                 ? Container(
-                                    alignment: Alignment.centerLeft,
-                                    child: Text(
-                                      state.error!,
-                                      style: TextStyle(fontFamily: CustomFonts.get.oxygen_bold, color: CustomColor.get.red, fontSize: 16),
-                                    ),
-                                  )
+                              alignment: Alignment.centerLeft,
+                              child: Text(
+                                state.error!,
+                                style: TextStyle(fontFamily: CustomFonts.get.oxygen_bold, color: Colors.redAccent, fontSize: 16),
+                              ),
+                            )
                                 : Container(),
                             Padding(
                               padding: const EdgeInsets.only(top: 10),
@@ -100,7 +105,7 @@ class LoginPage extends StatelessWidget {
                                   Expanded(
                                     child: ElevatedButton(
                                       style: ButtonStyle(
-                                          backgroundColor: MaterialStateProperty.all<Color>(CustomColor.get.light_pink),
+                                          backgroundColor: MaterialStateProperty.all<Color>(Colors.blueAccent),
                                           shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                                               RoundedRectangleBorder(borderRadius: BorderRadius.circular(18.0)))),
                                       onPressed: () async {
@@ -111,7 +116,7 @@ class LoginPage extends StatelessWidget {
                                         child: Text(
                                           Intl.message('search'),
                                           style: TextStyle(
-                                              color: CustomColor.get.light_grey, fontFamily: CustomFonts.get.oxygen_bold, fontSize: 16),
+                                              color: Colors.black, fontFamily: CustomFonts.get.oxygen_bold, fontSize: 16),
                                         ),
                                       ),
                                     ),

@@ -8,6 +8,7 @@ import 'package:tfg/widgets/loader.dart';
 import 'package:tfg/repositories/preferences_repository.dart';
 import 'cubit/match_history_cubit.dart';
 import 'package:tfg/models/participant_details.dart';  // Importa ParticipantDetails
+import 'package:tfg/constants/custom_images.dart'; // Importa las imágenes
 
 class MatchHistoryPage extends StatefulWidget {
   const MatchHistoryPage({Key? key}) : super(key: key);
@@ -45,23 +46,26 @@ class _MatchHistoryPageState extends State<MatchHistoryPage> {
               }
 
               return Scaffold(
-                backgroundColor: CustomColor.get.white,
+                backgroundColor: Colors.grey[850],
                 appBar: AppBar(
                   title: Text(
                     'Match History',
                     style: TextStyle(
-                      color: CustomColor.get.light_pink,
+                      color: Colors.blueAccent,
                     ),
                   ),
-                  backgroundColor: CustomColor.get.white,
+                  backgroundColor: Colors.grey[850],
                   elevation: 0,
-                  iconTheme: IconThemeData(color: CustomColor.get.light_pink),
+                  iconTheme: IconThemeData(color: Colors.blueAccent),
                   actions: [
-                    IconButton(
-                      icon: Icon(Icons.arrow_back),
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                      },
+
+                    Padding(
+                      padding: const EdgeInsets.only(right: 16.0),
+                      child: Image.asset(
+                        CustomImages.get.logo,
+                        width: 40,
+                        height: 40,
+                      ),
                     ),
                   ],
                 ),
@@ -77,7 +81,7 @@ class _MatchHistoryPageState extends State<MatchHistoryPage> {
                               if (usernameSnapshot.connectionState == ConnectionState.waiting) {
                                 return CircularProgressIndicator();
                               } else if (usernameSnapshot.hasError) {
-                                return Text('Error loading username');
+                                return Text('Error loading username', style: TextStyle(color: Colors.white));
                               } else {
                                 String username = usernameSnapshot.data ?? '';
                                 return FutureBuilder<String?>(
@@ -86,7 +90,7 @@ class _MatchHistoryPageState extends State<MatchHistoryPage> {
                                     if (hashtagSnapshot.connectionState == ConnectionState.waiting) {
                                       return CircularProgressIndicator();
                                     } else if (hashtagSnapshot.hasError) {
-                                      return Text('Error loading hashtag');
+                                      return Text('Error loading hashtag', style: TextStyle(color: Colors.white));
                                     } else {
                                       String hashtag = hashtagSnapshot.data ?? '';
                                       return Column(
@@ -96,6 +100,7 @@ class _MatchHistoryPageState extends State<MatchHistoryPage> {
                                             style: TextStyle(
                                               fontSize: 20,
                                               fontWeight: FontWeight.bold,
+                                              color: Colors.white,
                                             ),
                                           ),
                                           SizedBox(height: 20),
@@ -110,7 +115,6 @@ class _MatchHistoryPageState extends State<MatchHistoryPage> {
                                                       (p) => p.riotIdGameName == username && p.riotIdTagline == hashtag,
                                                   orElse: () => match.participants[0],
                                                 );
-                                                print('Current user participant: $currentUserParticipant');
                                                 return Card(
                                                   color: currentUserParticipant.win ? Colors.green[100] : Colors.red[100],
                                                   margin: EdgeInsets.symmetric(vertical: 8.0),
@@ -124,12 +128,13 @@ class _MatchHistoryPageState extends State<MatchHistoryPage> {
                                                           style: TextStyle(
                                                             fontSize: 18,
                                                             fontWeight: FontWeight.bold,
+                                                            color: Colors.black,
                                                           ),
                                                         ),
                                                         SizedBox(height: 8),
                                                         Text(
                                                           'Duration: ${match.gameDuration} seconds',
-                                                          style: TextStyle(fontSize: 16),
+                                                          style: TextStyle(fontSize: 16, color: Colors.black),
                                                         ),
                                                         SizedBox(height: 8),
                                                         _buildParticipantCard(currentUserParticipant, username, hashtag),
@@ -140,7 +145,10 @@ class _MatchHistoryPageState extends State<MatchHistoryPage> {
                                                               _expanded[index] = !_expanded[index];
                                                             });
                                                           },
-                                                          child: Text(_expanded[index] ? 'Hide Details' : 'Show Details'),
+                                                          child: Text(
+                                                            _expanded[index] ? 'Hide Details' : 'Show Details',
+                                                            style: TextStyle(color: Colors.blueAccent),
+                                                          ),
                                                         ),
                                                         if (_expanded[index])
                                                           Column(
@@ -153,7 +161,7 @@ class _MatchHistoryPageState extends State<MatchHistoryPage> {
                                               },
                                             ),
                                           if (state.matchDetails == null || state.matchDetails!.isEmpty)
-                                            Text('No match details available'),
+                                            Text('No match details available', style: TextStyle(color: Colors.white)),
                                         ],
                                       );
                                     }
@@ -210,6 +218,10 @@ class _MatchHistoryPageState extends State<MatchHistoryPage> {
     return Container(
       padding: EdgeInsets.all(8.0),
       margin: EdgeInsets.all(4.0),
+      decoration: BoxDecoration(
+        color: isCurrentUser ? Colors.grey[700] : Colors.grey[800],
+        borderRadius: BorderRadius.circular(8.0),
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -218,33 +230,33 @@ class _MatchHistoryPageState extends State<MatchHistoryPage> {
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,
-              color: isCurrentUser ? Color(0xFFDAA520) : Colors.black, // Cambiar el color del texto si es el usuario actual
+              color: isCurrentUser ? Color(0xFFDAA520) : Colors.white, // Cambiar el color del texto si es el usuario actual
             ),
           ),
           SizedBox(height: 4),
           Text(
             'K/D/A: ${participant.kills}/${participant.deaths}/${participant.assists}',
-            style: TextStyle(fontSize: 14),
+            style: TextStyle(fontSize: 14, color: Colors.white),
           ),
           SizedBox(height: 4),
           Text(
             'Gold Earned: ${participant.goldEarned}',
-            style: TextStyle(fontSize: 14),
+            style: TextStyle(fontSize: 14, color: Colors.white),
           ),
           SizedBox(height: 4),
           Text(
             'Damage Dealt: ${participant.totalDamageDealt}',
-            style: TextStyle(fontSize: 14),
+            style: TextStyle(fontSize: 14, color: Colors.white),
           ),
           SizedBox(height: 4),
           Text(
             'Vision Score: ${participant.visionScore}',
-            style: TextStyle(fontSize: 14),
+            style: TextStyle(fontSize: 14, color: Colors.white),
           ),
           SizedBox(height: 4),
           Text(
             'Player: ${participant.riotIdGameName}#${participant.riotIdTagline}',
-            style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+            style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.white),
           ),
         ],
       ),
