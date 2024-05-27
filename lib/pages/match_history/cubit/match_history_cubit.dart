@@ -14,12 +14,6 @@ class MatchHistoryCubit extends Cubit<MatchHistoryState> {
   }
 
   Future<void> initState() async {
-    if (M.accountId == null) {
-      emit(state.copyWith(pageStatus: PageStatusEnum.logout));
-      return;
-    }
-
-    // Llama al método para obtener el profileIconId
     String uuid = M.uuid!;
     String? profileIconId = await AccountGetters().getProfileIconId(uuid);
 
@@ -37,9 +31,5 @@ class MatchHistoryCubit extends Cubit<MatchHistoryState> {
       profileIconId: profileIconId,
       matchDetails: matchDetails,
     ));
-  }
-
-  Future<void> setLogout() async {
-    emit(state.copyWith(pageStatus: PageStatusEnum.logout));
   }
 }

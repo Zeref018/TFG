@@ -94,19 +94,29 @@ class AccountGetters {
     List<MatchDetails> matchDetailsList = [];
 
     for (String matchId in matchIds) {
-      http.Response response  = await PhpApiRepository().get(function: MapKeys.function.get_match, uri: '/$matchId?api_key=${GeneralConfiguration.get.api_key}', isEuw: false);
-
+      http.Response response = await PhpApiRepository().get(
+        function: MapKeys.function.get_match,
+        uri: '/$matchId?api_key=${GeneralConfiguration.get.api_key}',
+        isEuw: false,
+      );
 
       if (response.statusCode == ResponseCodes.get.success) {
-        Map<String, dynamic> map = json.decode(response.body);
-        matchDetailsList.add(MatchDetails.fromMap(map));
+        try {
+          Map<String, dynamic> map = json.decode(response.body);
+          matchDetailsList.add(MatchDetails.fromMap(map));
+        } catch (e) {
+          // Manejar el error de decodificación JSON
+          print('Error decoding match details for matchId $matchId: $e');
+        }
       } else {
-        // Manejar el error o la excepción
+        // Manejar el error de la respuesta
+        print('Error fetching match details for matchId $matchId: ${response.statusCode}');
       }
     }
 
-    return matchDetailsList;
+    return matchDetailsList.isNotEmpty ? matchDetailsList : null;
   }
+
 }
 //Sakurajima Mai #fito1
 //YSKM #Zrf

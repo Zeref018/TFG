@@ -1,43 +1,26 @@
+import 'participant_details.dart';  // Asegúrate de que la ruta sea correcta
+
 class MatchDetails {
-  final int? assists;
-  final int? kills;
-  final int? deaths;
-  final int? championId;
-  final String? championName;
-  final int? goldEarned;
-  final int? totalDamageDealt;
-  final int? totalDamageDealtToChampions;
-  final int? totalHeal;
-  final int? visionScore;
-  final bool? win;
+  final String matchId;
+  final List<ParticipantDetails> participants;
+  final String gameMode;
+  final int gameDuration;
 
   MatchDetails({
-    this.assists,
-    this.kills,
-    this.deaths,
-    this.championId,
-    this.championName,
-    this.goldEarned,
-    this.totalDamageDealt,
-    this.totalDamageDealtToChampions,
-    this.totalHeal,
-    this.visionScore,
-    this.win,
+    required this.matchId,
+    required this.participants,
+    required this.gameMode,
+    required this.gameDuration,
   });
 
   factory MatchDetails.fromMap(Map<String, dynamic> map) {
     return MatchDetails(
-      assists: map['assists'],
-      kills: map['kills'],
-      deaths: map['deaths'],
-      championId: map['championId'],
-      championName: map['championName'],
-      goldEarned: map['goldEarned'],
-      totalDamageDealt: map['totalDamageDealt'],
-      totalDamageDealtToChampions: map['totalDamageDealtToChampions'],
-      totalHeal: map['totalHeal'],
-      visionScore: map['visionScore'],
-      win: map['win'],
+      matchId: map['metadata']['matchId'],
+      participants: (map['info']['participants'] as List)
+          .map((participant) => ParticipantDetails.fromMap(participant))
+          .toList(),
+      gameMode: map['info']['gameMode'],
+      gameDuration: map['info']['gameDuration'],
     );
   }
 }
