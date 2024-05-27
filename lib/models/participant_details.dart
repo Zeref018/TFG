@@ -7,9 +7,9 @@ class ParticipantDetails {
   final int totalDamageDealt;
   final int visionScore;
   final bool win;
+  final String riotIdGameName;
+  final String riotIdTagline;
   final String teamPosition;
-  final String riotIdGameName; // Añadir el campo riotIdGameName
-  final String riotIdTagline;  // Añadir el campo riotIdTagline
 
   ParticipantDetails({
     required this.championName,
@@ -20,24 +20,25 @@ class ParticipantDetails {
     required this.totalDamageDealt,
     required this.visionScore,
     required this.win,
+    required this.riotIdGameName,
+    required this.riotIdTagline,
     required this.teamPosition,
-    required this.riotIdGameName, // Inicializar el campo riotIdGameName
-    required this.riotIdTagline,  // Inicializar el campo riotIdTagline
   });
 
   factory ParticipantDetails.fromMap(Map<String, dynamic> map) {
+    print(map);  // Agregamos esto para depurar los valores del map
     return ParticipantDetails(
-      championName: map['championName'],
-      kills: map['kills'],
-      deaths: map['deaths'],
-      assists: map['assists'],
-      goldEarned: map['goldEarned'],
-      totalDamageDealt: map['totalDamageDealt'],
-      visionScore: map['visionScore'],
-      win: map['win'],
-      teamPosition: map['teamPosition'],
-      riotIdGameName: map['riotIdGameName'], // Mapear el campo riotIdGameName
-      riotIdTagline: map['riotIdTagline'],   // Mapear el campo riotIdTagline
+      championName: map['championName'] ?? '',
+      kills: map['kills'] ?? 0,
+      deaths: map['deaths'] ?? 0,
+      assists: map['assists'] ?? 0,
+      goldEarned: map['goldEarned'] ?? 0,
+      totalDamageDealt: map['totalDamageDealt'] ?? 0,
+      visionScore: map['visionScore'] ?? 0,
+      win: map['win'] ?? false,
+      riotIdGameName: map['riotIdGameName'] ?? '',
+      riotIdTagline: map['riotIdTagline'] ?? '',
+      teamPosition: map['teamPosition'] ?? '',
     );
   }
 }

@@ -14,13 +14,13 @@ class MatchDetails {
   });
 
   factory MatchDetails.fromMap(Map<String, dynamic> map) {
+    print(map);  // Agregamos esto para depurar los valores del map
     return MatchDetails(
-      matchId: map['metadata']['matchId'],
-      participants: (map['info']['participants'] as List)
-          .map((participant) => ParticipantDetails.fromMap(participant))
-          .toList(),
-      gameMode: map['info']['gameMode'],
-      gameDuration: map['info']['gameDuration'],
+      matchId: map['metadata']['matchId'] ?? '',
+      participants: List<ParticipantDetails>.from(
+          map['info']['participants'].map((participant) => ParticipantDetails.fromMap(participant))),
+      gameMode: map['info']['gameMode'] ?? '',
+      gameDuration: map['info']['gameDuration'] ?? 0,
     );
   }
 }

@@ -5,14 +5,28 @@ import 'package:tfg/base_cubit/base_cubit.dart';
 import 'package:tfg/constants/custom_colors.dart';
 import 'package:tfg/enums/page_status_enum.dart';
 import 'package:tfg/widgets/loader.dart';
+import 'package:tfg/repositories/preferences_repository.dart';
 import 'cubit/match_history_cubit.dart';
 import 'package:tfg/models/participant_details.dart';  // Importa ParticipantDetails
 
-class MatchHistoryPage extends StatelessWidget {
+class MatchHistoryPage extends StatefulWidget {
   const MatchHistoryPage({Key? key}) : super(key: key);
 
   static const String url = '/match_history/';
   static const String route = '/match_history/';
+
+  @override
+  _MatchHistoryPageState createState() => _MatchHistoryPageState();
+}
+
+class _MatchHistoryPageState extends State<MatchHistoryPage> {
+  late List<bool> _expanded;
+
+  @override
+  void initState() {
+    super.initState();
+    _expanded = [];
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -24,6 +38,10 @@ class MatchHistoryPage extends StatelessWidget {
             builder: (context, state) {
               if (state.pageStatus == PageStatusEnum.loading) {
                 return const Loader();
+              }
+
+              if (_expanded.length != state.matchDetails?.length) {
+                _expanded = List<bool>.filled(state.matchDetails!.length, false);
               }
 
               return Scaffold(
@@ -53,42 +71,97 @@ class MatchHistoryPage extends StatelessWidget {
                       padding: const EdgeInsets.all(16.0),
                       child: Column(
                         children: [
-                          SizedBox(height: 20),
-                          if (state.matchDetails != null)
-                            ListView.builder(
-                              shrinkWrap: true,
-                              physics: NeverScrollableScrollPhysics(),
-                              itemCount: state.matchDetails!.length,
-                              itemBuilder: (context, index) {
-                                final match = state.matchDetails![index];
-                                return Card(
-                                  color: match.participants.any((p) => p.win) ? Colors.green[100] : Colors.red[100], // Cambiar el color según el resultado
-                                  margin: EdgeInsets.symmetric(vertical: 8.0),
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(16.0),
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          'Game Mode: ${match.gameMode}',
-                                          style: TextStyle(
-                                            fontSize: 18,
-                                            fontWeight: FontWeight.bold,
+                          FutureBuilder<String?>(
+                            future: PreferencesRepository().getUsername(),
+                            builder: (context, usernameSnapshot) {
+                              if (usernameSnapshot.connectionState == ConnectionState.waiting) {
+                                return CircularProgressIndicator();
+                              } else if (usernameSnapshot.hasError) {
+                                return Text('Error loading username');
+                              } else {
+                                String username = usernameSnapshot.data ?? '';
+                                return FutureBuilder<String?>(
+                                  future: PreferencesRepository().getHashtag(),
+                                  builder: (context, hashtagSnapshot) {
+                                    if (hashtagSnapshot.connectionState == ConnectionState.waiting) {
+                                      return CircularProgressIndicator();
+                                    } else if (hashtagSnapshot.hasError) {
+                                      return Text('Error loading hashtag');
+                                    } else {
+                                      String hashtag = hashtagSnapshot.data ?? '';
+                                      return Column(
+                                        children: [
+                                          Text(
+                                            '$username#$hashtag',
+                                            style: TextStyle(
+                                              fontSize: 20,
+                                              fontWeight: FontWeight.bold,
+                                            ),
                                           ),
-                                        ),
-                                        SizedBox(height: 8),
-                                        Text(
-                                          'Duration: ${match.gameDuration} seconds',
-                                          style: TextStyle(fontSize: 16),
-                                        ),
-                                        SizedBox(height: 8),
-                                        ..._buildParticipantRows(match.participants),
-                                      ],
-                                    ),
-                                  ),
+                                          SizedBox(height: 20),
+                                          if (state.matchDetails != null && state.matchDetails!.isNotEmpty)
+                                            ListView.builder(
+                                              shrinkWrap: true,
+                                              physics: NeverScrollableScrollPhysics(),
+                                              itemCount: state.matchDetails!.length,
+                                              itemBuilder: (context, index) {
+                                                final match = state.matchDetails![index];
+                                                final currentUserParticipant = match.participants.firstWhere(
+                                                      (p) => p.riotIdGameName == username && p.riotIdTagline == hashtag,
+                                                  orElse: () => match.participants[0],
+                                                );
+                                                print('Current user participant: $currentUserParticipant');
+                                                return Card(
+                                                  color: currentUserParticipant.win ? Colors.green[100] : Colors.red[100],
+                                                  margin: EdgeInsets.symmetric(vertical: 8.0),
+                                                  child: Padding(
+                                                    padding: const EdgeInsets.all(16.0),
+                                                    child: Column(
+                                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                                      children: [
+                                                        Text(
+                                                          'Game Mode: ${match.gameMode}',
+                                                          style: TextStyle(
+                                                            fontSize: 18,
+                                                            fontWeight: FontWeight.bold,
+                                                          ),
+                                                        ),
+                                                        SizedBox(height: 8),
+                                                        Text(
+                                                          'Duration: ${match.gameDuration} seconds',
+                                                          style: TextStyle(fontSize: 16),
+                                                        ),
+                                                        SizedBox(height: 8),
+                                                        _buildParticipantCard(currentUserParticipant, username, hashtag),
+                                                        SizedBox(height: 8),
+                                                        TextButton(
+                                                          onPressed: () {
+                                                            setState(() {
+                                                              _expanded[index] = !_expanded[index];
+                                                            });
+                                                          },
+                                                          child: Text(_expanded[index] ? 'Hide Details' : 'Show Details'),
+                                                        ),
+                                                        if (_expanded[index])
+                                                          Column(
+                                                            children: _buildParticipantRows(match.participants, username, hashtag),
+                                                          ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                );
+                                              },
+                                            ),
+                                          if (state.matchDetails == null || state.matchDetails!.isEmpty)
+                                            Text('No match details available'),
+                                        ],
+                                      );
+                                    }
+                                  },
                                 );
-                              },
-                            ),
+                              }
+                            },
+                          ),
                         ],
                       ),
                     ),
@@ -102,7 +175,7 @@ class MatchHistoryPage extends StatelessWidget {
     );
   }
 
-  List<Widget> _buildParticipantRows(List<ParticipantDetails> participants) {
+  List<Widget> _buildParticipantRows(List<ParticipantDetails> participants, String username, String hashtag) {
     // Agrupar los participantes por su posición
     Map<String, List<ParticipantDetails>> groupedParticipants = {};
     for (var participant in participants) {
@@ -120,8 +193,8 @@ class MatchHistoryPage extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              _buildParticipantCard(participants[0]),
-              _buildParticipantCard(participants[1]),
+              Flexible(child: _buildParticipantCard(participants[0], username, hashtag)),
+              Flexible(child: _buildParticipantCard(participants[1], username, hashtag)),
             ],
           ),
         );
@@ -131,8 +204,12 @@ class MatchHistoryPage extends StatelessWidget {
     return rows;
   }
 
-  Widget _buildParticipantCard(ParticipantDetails participant) {
-    return Expanded(
+  Widget _buildParticipantCard(ParticipantDetails participant, String username, String hashtag) {
+    bool isCurrentUser = (participant.riotIdGameName == username && participant.riotIdTagline == hashtag);
+
+    return Container(
+      padding: EdgeInsets.all(8.0),
+      margin: EdgeInsets.all(4.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -141,6 +218,7 @@ class MatchHistoryPage extends StatelessWidget {
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,
+              color: isCurrentUser ? Color(0xFFDAA520) : Colors.black, // Cambiar el color del texto si es el usuario actual
             ),
           ),
           SizedBox(height: 4),
