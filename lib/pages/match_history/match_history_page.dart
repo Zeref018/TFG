@@ -9,6 +9,7 @@ import 'package:tfg/repositories/preferences_repository.dart';
 import 'cubit/match_history_cubit.dart';
 import 'package:tfg/models/participant_details.dart';  // Importa ParticipantDetails
 import 'package:tfg/constants/custom_images.dart'; // Importa las imágenes
+import 'package:tfg/models/excel_exporter.dart'; // Importa la función de exportación
 
 class MatchHistoryPage extends StatefulWidget {
   const MatchHistoryPage({Key? key}) : super(key: key);
@@ -58,7 +59,6 @@ class _MatchHistoryPageState extends State<MatchHistoryPage> {
                   elevation: 0,
                   iconTheme: IconThemeData(color: Colors.blueAccent),
                   actions: [
-
                     Padding(
                       padding: const EdgeInsets.only(right: 16.0),
                       child: Image.asset(
@@ -104,6 +104,24 @@ class _MatchHistoryPageState extends State<MatchHistoryPage> {
                                             ),
                                           ),
                                           SizedBox(height: 20),
+                                          ElevatedButton(
+                                            onPressed: () => exportToExcel(context, username, hashtag, state.matchDetails ?? []),
+                                            child: Padding(
+                                              padding: const EdgeInsets.symmetric(vertical: 15),
+                                              child: Text(
+                                                'Export to Excel',
+                                                style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontFamily: 'OxygenBold',
+                                                  fontSize: 16,
+                                                ),
+                                              ),
+                                            ),
+                                            style: ElevatedButton.styleFrom(
+                                              backgroundColor: Colors.blueAccent,
+                                            ),
+                                          ),
+                                          SizedBox(height: 20),
                                           if (state.matchDetails != null && state.matchDetails!.isNotEmpty)
                                             ListView.builder(
                                               shrinkWrap: true,
@@ -123,15 +141,6 @@ class _MatchHistoryPageState extends State<MatchHistoryPage> {
                                                     child: Column(
                                                       crossAxisAlignment: CrossAxisAlignment.start,
                                                       children: [
-                                                        Text(
-                                                          'Game Mode: ${match.gameMode}',
-                                                          style: TextStyle(
-                                                            fontSize: 18,
-                                                            fontWeight: FontWeight.bold,
-                                                            color: Colors.black,
-                                                          ),
-                                                        ),
-                                                        SizedBox(height: 8),
                                                         Text(
                                                           'Duration: ${match.gameDuration} seconds',
                                                           style: TextStyle(fontSize: 16, color: Colors.black),
