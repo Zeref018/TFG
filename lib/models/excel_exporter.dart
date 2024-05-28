@@ -3,7 +3,7 @@ import 'package:path_provider/path_provider.dart';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:tfg/models/participant_details.dart';
-import 'package:tfg/models/match_details.dart'; // Importa MatchDetails si no está en el mismo archivo
+import 'package:tfg/models/match_details.dart';
 
 Future<void> exportToExcel(BuildContext context, String username, String hashtag, List<MatchDetails> matchDetails) async {
   var excel = Excel.createExcel();
@@ -17,8 +17,9 @@ Future<void> exportToExcel(BuildContext context, String username, String hashtag
     'Enemy Support',
     'KDA',
     'KDA Ratio',
-    'DMG',
+    'DMG to Champs',
     'DMG/MIN',
+    'Minions Killed/Min',
     'Duration',
     'Result'
   ];
@@ -35,6 +36,7 @@ Future<void> exportToExcel(BuildContext context, String username, String hashtag
     '#673AB7', // Índigo
     '#00BCD4', // Cian
     '#8BC34A', // Verde claro
+    '#FFD700', // Oro
     '#FF5252', // Rojo
   ];
 
@@ -50,12 +52,17 @@ Future<void> exportToExcel(BuildContext context, String username, String hashtag
     '#512DA8', // Índigo oscuro
     '#0097A7', // Cian oscuro
     '#689F38', // Verde oscuro
+    '#C6A700', // Oro oscuro
     '#D32F2F', // Rojo oscuro
   ];
 
   // Aplicar estilos a los encabezados
   for (int i = 0; i < headers.length; i++) {
-    CellStyle headerStyle = CellStyle(backgroundColorHex: headerColors[i], bold: true, fontColorHex: '#FFFFFF');
+    CellStyle headerStyle = CellStyle(
+        backgroundColorHex: headerColors[i],
+        bold: true,
+        fontColorHex: '#FFFFFF'
+    );
     sheetObject.cell(CellIndex.indexByColumnRow(columnIndex: i, rowIndex: 0)).value = headers[i];
     sheetObject.cell(CellIndex.indexByColumnRow(columnIndex: i, rowIndex: 0)).cellStyle = headerStyle;
   }
@@ -87,20 +94,19 @@ Future<void> exportToExcel(BuildContext context, String username, String hashtag
     String kdaText = '${currentUserParticipant.kills}/${currentUserParticipant.deaths}/${currentUserParticipant.assists}';
     String duration = '${(match.gameDuration / 60).floor()}m ${(match.gameDuration % 60).floor()}s';
     String damagePerMinute = currentUserParticipant.damagePerMinute.toStringAsFixed(2);
+    double minionsKilledPerMinute = currentUserParticipant.totalMinionsKilled / (match.gameDuration / 60);
 
     List<dynamic> row = [
-
-
       currentUserParticipant.championName,
       alliedSupport.championName.isNotEmpty ? alliedSupport.championName : 'N/A',
       enemyADC.championName.isNotEmpty ? enemyADC.championName : 'N/A',
       enemySupport.championName.isNotEmpty ? enemySupport.championName : 'N/A',
       kdaText,
       kdaRatio.toStringAsFixed(2),
-      currentUserParticipant.totalDamageDealt,
+      currentUserParticipant.totalDamageDealtToChampions,
       damagePerMinute,
+      minionsKilledPerMinute.toStringAsFixed(2),
       duration,
-
       currentUserParticipant.win ? 'Win' : 'Lose',
     ];
 
@@ -108,11 +114,13 @@ Future<void> exportToExcel(BuildContext context, String username, String hashtag
 
     // Estilo para cada celda de la fila
     for (int i = 0; i < row.length; i++) {
-      CellStyle cellStyle = CellStyle(backgroundColorHex: columnColors[i]);
+      CellStyle cellStyle = CellStyle(
+          backgroundColorHex: columnColors[i]
+      );
       sheetObject.cell(CellIndex.indexByColumnRow(columnIndex: i, rowIndex: rowIndex)).cellStyle = cellStyle;
 
       // Aplicar color especial a la columna KDA Ratio
-      if (i == 4) { // Columna KDA Ratio
+      if (i == 5) { // Columna KDA Ratio
         if (kdaRatio > 3) {
           cellStyle = CellStyle(backgroundColorHex: '#00FF00'); // Verde
         } else if (kdaRatio >= 2) {
@@ -124,7 +132,7 @@ Future<void> exportToExcel(BuildContext context, String username, String hashtag
       }
 
       // Aplicar color especial a la columna Win
-      if (i == 9) { // Columna Win
+      if (i == 10) { // Columna Win
         if (currentUserParticipant.win) {
           cellStyle = CellStyle(backgroundColorHex: '#00FF00'); // Verde
         } else {

@@ -4,12 +4,14 @@ import 'package:flutter_modular/flutter_modular.dart';
 import 'package:tfg/base_cubit/base_cubit.dart';
 import 'package:tfg/constants/custom_colors.dart';
 import 'package:tfg/enums/page_status_enum.dart';
+import 'package:tfg/models/excel_exporter.dart';
 import 'package:tfg/widgets/loader.dart';
 import 'package:tfg/repositories/preferences_repository.dart';
 import 'cubit/match_history_cubit.dart';
-import 'package:tfg/models/participant_details.dart';  // Importa ParticipantDetails
-import 'package:tfg/constants/custom_images.dart'; // Importa las imágenes
-import 'package:tfg/models/excel_exporter.dart'; // Importa la función de exportación
+import 'package:tfg/models/participant_details.dart';
+import 'package:tfg/models/match_details.dart';
+import 'package:tfg/constants/custom_images.dart';
+import 'package:tfg/models/excel_exporter.dart';
 
 class MatchHistoryPage extends StatefulWidget {
   const MatchHistoryPage({Key? key}) : super(key: key);
@@ -104,24 +106,6 @@ class _MatchHistoryPageState extends State<MatchHistoryPage> {
                                             ),
                                           ),
                                           SizedBox(height: 20),
-                                          ElevatedButton(
-                                            onPressed: () => exportToExcel(context, username, hashtag, state.matchDetails ?? []),
-                                            child: Padding(
-                                              padding: const EdgeInsets.symmetric(vertical: 15),
-                                              child: Text(
-                                                'Export to Excel',
-                                                style: TextStyle(
-                                                  color: Colors.white,
-                                                  fontFamily: 'OxygenBold',
-                                                  fontSize: 16,
-                                                ),
-                                              ),
-                                            ),
-                                            style: ElevatedButton.styleFrom(
-                                              backgroundColor: Colors.blueAccent,
-                                            ),
-                                          ),
-                                          SizedBox(height: 20),
                                           if (state.matchDetails != null && state.matchDetails!.isNotEmpty)
                                             ListView.builder(
                                               shrinkWrap: true,
@@ -171,6 +155,18 @@ class _MatchHistoryPageState extends State<MatchHistoryPage> {
                                             ),
                                           if (state.matchDetails == null || state.matchDetails!.isEmpty)
                                             Text('No match details available', style: TextStyle(color: Colors.white)),
+                                          ElevatedButton(
+                                            onPressed: () {
+                                              exportToExcel(context, username, hashtag, state.matchDetails!);
+                                            },
+                                            child: Text(
+                                              'Download Excel',
+                                              style: TextStyle(color: Colors.white),
+                                            ),
+                                            style: ElevatedButton.styleFrom(
+                                              backgroundColor: Colors.blueAccent,
+                                            ),
+                                          ),
                                         ],
                                       );
                                     }
@@ -254,18 +250,13 @@ class _MatchHistoryPageState extends State<MatchHistoryPage> {
           ),
           SizedBox(height: 4),
           Text(
-            'Damage Dealt: ${participant.totalDamageDealt}',
+            'Damage Dealt: ${participant.totalDamageDealtToChampions}',
             style: TextStyle(fontSize: 14, color: Colors.white),
           ),
           SizedBox(height: 4),
           Text(
-            'Vision Score: ${participant.visionScore}',
+            'Total Minions Killed: ${participant.totalMinionsKilled}',
             style: TextStyle(fontSize: 14, color: Colors.white),
-          ),
-          SizedBox(height: 4),
-          Text(
-            'Player: ${participant.riotIdGameName}#${participant.riotIdTagline}',
-            style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.white),
           ),
         ],
       ),

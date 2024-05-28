@@ -11,7 +11,16 @@ class ParticipantDetails {
   final bool win;
   final String teamPosition;
   final double damagePerMinute; // Añadir este campo
+  final int totalDamageDealtToChampions;
   final int teamId; // Añadir este campo
+  final int item0;
+  final int item1;
+  final int item2;
+  final int item3;
+  final int item4;
+  final int item5;
+  final int item6;
+  final int totalMinionsKilled;
 
   ParticipantDetails({
     required this.riotIdGameName,
@@ -26,7 +35,16 @@ class ParticipantDetails {
     required this.win,
     required this.teamPosition,
     required this.damagePerMinute, // Inicializar este campo
+    required this.totalDamageDealtToChampions,
     required this.teamId, // Inicializar este campo
+    required this.item0,
+    required this.item1,
+    required this.item2,
+    required this.item3,
+    required this.item4,
+    required this.item5,
+    required this.item6,
+    required this.totalMinionsKilled,
   });
 
   factory ParticipantDetails.fromMap(Map<String, dynamic> map) {
@@ -44,6 +62,15 @@ class ParticipantDetails {
       teamPosition: map['teamPosition'] ?? '',
       damagePerMinute: (map['damagePerMinute'] ?? map['challenges']?['damagePerMinute'] ?? 0.0).toDouble(), // Mapear este campo
       teamId: map['teamId'] ?? 0, // Mapear este campo
+      totalDamageDealtToChampions: map['totalDamageDealtToChampions'],
+      item0: map['item0'],
+      item1: map['item1'],
+      item2: map['item2'],
+      item3: map['item3'],
+      item4: map['item4'],
+      item5: map['item5'],
+      item6: map['item6'],
+      totalMinionsKilled: map['totalMinionsKilled'],
     );
   }
 
@@ -62,6 +89,15 @@ class ParticipantDetails {
       teamPosition: '',
       damagePerMinute: 0.0,
       teamId: 0,
+      totalDamageDealtToChampions: 0,
+      item0: 0,
+      item1: 0,
+      item2: 0,
+      item3: 0,
+      item4: 0,
+      item5: 0,
+      item6: 0,
+      totalMinionsKilled: 0,
     );
   }
 }
