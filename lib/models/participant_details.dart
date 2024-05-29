@@ -10,9 +10,9 @@ class ParticipantDetails {
   final int visionScore;
   final bool win;
   final String teamPosition;
-  final double damagePerMinute; // Añadir este campo
+  final double damagePerMinute;
   final int totalDamageDealtToChampions;
-  final int teamId; // Añadir este campo
+  final int teamId;
   final int item0;
   final int item1;
   final int item2;
@@ -21,6 +21,8 @@ class ParticipantDetails {
   final int item5;
   final int item6;
   final int totalMinionsKilled;
+  final String summonerName;  // Nuevo campo
+  final int championId;  // Nuevo campo
 
   ParticipantDetails({
     required this.riotIdGameName,
@@ -34,9 +36,9 @@ class ParticipantDetails {
     required this.visionScore,
     required this.win,
     required this.teamPosition,
-    required this.damagePerMinute, // Inicializar este campo
+    required this.damagePerMinute,
     required this.totalDamageDealtToChampions,
-    required this.teamId, // Inicializar este campo
+    required this.teamId,
     required this.item0,
     required this.item1,
     required this.item2,
@@ -45,6 +47,8 @@ class ParticipantDetails {
     required this.item5,
     required this.item6,
     required this.totalMinionsKilled,
+    required this.summonerName,  // Inicializar este campo
+    required this.championId,  // Inicializar este campo
   });
 
   factory ParticipantDetails.fromMap(Map<String, dynamic> map) {
@@ -60,17 +64,19 @@ class ParticipantDetails {
       visionScore: map['visionScore'] ?? 0,
       win: map['win'] ?? false,
       teamPosition: map['teamPosition'] ?? '',
-      damagePerMinute: (map['damagePerMinute'] ?? map['challenges']?['damagePerMinute'] ?? 0.0).toDouble(), // Mapear este campo
-      teamId: map['teamId'] ?? 0, // Mapear este campo
-      totalDamageDealtToChampions: map['totalDamageDealtToChampions'],
-      item0: map['item0'],
-      item1: map['item1'],
-      item2: map['item2'],
-      item3: map['item3'],
-      item4: map['item4'],
-      item5: map['item5'],
-      item6: map['item6'],
-      totalMinionsKilled: map['totalMinionsKilled'],
+      damagePerMinute: (map['damagePerMinute'] ?? map['challenges']?['damagePerMinute'] ?? 0.0).toDouble(),
+      teamId: map['teamId'] ?? 0,
+      totalDamageDealtToChampions: map['totalDamageDealtToChampions'] ?? 0,
+      item0: map['item0'] ?? 0,
+      item1: map['item1'] ?? 0,
+      item2: map['item2'] ?? 0,
+      item3: map['item3'] ?? 0,
+      item4: map['item4'] ?? 0,
+      item5: map['item5'] ?? 0,
+      item6: map['item6'] ?? 0,
+      totalMinionsKilled: map['totalMinionsKilled'] ?? 0,
+      summonerName: map['summonerName'] ?? '',  // Mapear este campo
+      championId: map['championId'] ?? 0,  // Mapear este campo
     );
   }
 
@@ -98,6 +104,8 @@ class ParticipantDetails {
       item5: 0,
       item6: 0,
       totalMinionsKilled: 0,
+      summonerName: '',  // Inicializar este campo
+      championId: 0,  // Inicializar este campo
     );
   }
 }

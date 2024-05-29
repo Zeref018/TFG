@@ -38,265 +38,269 @@ class HomePage extends StatelessWidget {
                 return Container();
               }
 
-              // Construye la ruta de la imagen basada en el rango SoloQ
               String soloQImagePath = 'images/${state.soloQRank?.tier ?? 'default'}.png';
-
-              // Construye la ruta de la imagen basada en el rango FlexQ
               String flexQImagePath = 'images/${state.flexQRank?.tier ?? 'default'}.png';
 
-              // Verificar si ambos están sin clasificar ('unranked')
               bool soloQUnranked = state.soloQRank?.tier == null;
               bool flexQUnranked = state.flexQRank?.tier == null;
 
               return Scaffold(
                 backgroundColor: Colors.grey[850],
                 body: SafeArea(
-                  child: SingleChildScrollView(
-                    child: Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: LayoutBuilder(
-                        builder: (context, constraints) {
-                          bool isSmallScreen = constraints.maxWidth < 600;
-                          return Column(
-                            children: [
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Row(
-                                    children: [
-                                      IconButton(
-                                        onPressed: () => BlocProvider.of<HomeCubit>(context).setLogout(),
-                                        icon: Icon(Icons.arrow_back_rounded, color: Colors.blueAccent),
-                                      ),
-                                      if (state.profileIconId != null)
-                                        CircleAvatar(
-                                          backgroundImage: NetworkImage(
-                                            'https://ddragon.leagueoflegends.com/cdn/${M.patch}/img/profileicon/${state.profileIconId}.png',
-                                          ),
-                                          radius: 20,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Column(
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Row(
+                                  children: [
+                                    IconButton(
+                                      onPressed: () => BlocProvider.of<HomeCubit>(context).setLogout(),
+                                      icon: Icon(Icons.arrow_back_rounded, color: Colors.blueAccent),
+                                    ),
+                                    if (state.profileIconId != null)
+                                      CircleAvatar(
+                                        backgroundImage: NetworkImage(
+                                          'https://ddragon.leagueoflegends.com/cdn/${M.patch}/img/profileicon/${state.profileIconId}.png',
                                         ),
-                                      SizedBox(width: 8),
-                                      FutureBuilder<String?>(
-                                        future: PreferencesRepository().getUsername(),
-                                        builder: (context, usernameSnapshot) {
-                                          if (usernameSnapshot.connectionState == ConnectionState.waiting) {
-                                            return CircularProgressIndicator();
-                                          } else {
-                                            String username = usernameSnapshot.data ?? '';
-                                            return FutureBuilder<String?>(
-                                              future: PreferencesRepository().getHashtag(),
-                                              builder: (context, hashtagSnapshot) {
-                                                if (hashtagSnapshot.connectionState == ConnectionState.waiting) {
-                                                  return CircularProgressIndicator();
-                                                } else {
-                                                  String hashtag = hashtagSnapshot.data ?? '';
-                                                  return Text(
-                                                    '$username#$hashtag',
-                                                    style: TextStyle(
-                                                      fontSize: 20,
-                                                      fontWeight: FontWeight.bold,
-                                                      color: Colors.white,
-                                                    ),
-                                                  );
-                                                }
-                                              },
-                                            );
-                                          }
-                                        },
+                                        radius: 20,
                                       ),
+                                    SizedBox(width: 8),
+                                    FutureBuilder<String?>(
+                                      future: PreferencesRepository().getUsername(),
+                                      builder: (context, usernameSnapshot) {
+                                        if (usernameSnapshot.connectionState == ConnectionState.waiting) {
+                                          return CircularProgressIndicator();
+                                        } else {
+                                          String username = usernameSnapshot.data ?? '';
+                                          return FutureBuilder<String?>(
+                                            future: PreferencesRepository().getHashtag(),
+                                            builder: (context, hashtagSnapshot) {
+                                              if (hashtagSnapshot.connectionState == ConnectionState.waiting) {
+                                                return CircularProgressIndicator();
+                                              } else {
+                                                String hashtag = hashtagSnapshot.data ?? '';
+                                                return Text(
+                                                  '$username#$hashtag',
+                                                  style: TextStyle(
+                                                    fontSize: 20,
+                                                    fontWeight: FontWeight.bold,
+                                                    color: Colors.white,
+                                                  ),
+                                                );
+                                              }
+                                            },
+                                          );
+                                        }
+                                      },
+                                    ),
+                                  ],
+                                ),
+                                Image.asset(
+                                  CustomImages.get.logo,
+                                  width: 70,
+                                  height: 70,
+                                ),
+                              ],
+                            ),
+                            SizedBox(height: 30), // Añadir más margen entre el encabezado y el contenido
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Expanded(
+                                  child: Column(
+                                    children: [
+                                      Text(
+                                        'SOLO Q',
+                                        style: TextStyle(
+                                          color: Colors.blueAccent,
+                                          fontFamily: CustomFonts.get.oxygen_bold,
+                                          fontSize: 24,
+                                        ),
+                                      ),
+                                      SizedBox(height: 10),
+                                      ConstrainedBox(
+                                        constraints: BoxConstraints(
+                                          maxHeight: MediaQuery.of(context).size.height * 0.3,
+                                        ),
+                                        child: Image.asset(
+                                          soloQImagePath,
+                                          width: MediaQuery.of(context).size.width * 0.4,
+                                          errorBuilder: (context, error, stackTrace) {
+                                            print('Error loading SoloQ image: $error');
+                                            return Image.asset('images/default.png');
+                                          },
+                                        ),
+                                      ),
+                                      SizedBox(height: 10),
+                                      if (soloQUnranked)
+                                        Text(
+                                          'unranked',
+                                          style: TextStyle(
+                                            color: Colors.blueAccent,
+                                            fontFamily: CustomFonts.get.oxygen_bold,
+                                            fontSize: 16,
+                                          ),
+                                        )
+                                      else
+                                        Column(
+                                          children: [
+                                            Text(
+                                              '${state.soloQRank?.tier} ${state.soloQRank?.rank} ${state.soloQRank?.leaguePoints} LPs',
+                                              style: TextStyle(
+                                                color: Colors.blueAccent,
+                                                fontFamily: CustomFonts.get.oxygen_bold,
+                                                fontSize: 16,
+                                              ),
+                                            ),
+                                            Row(
+                                              mainAxisAlignment: MainAxisAlignment.center,
+                                              crossAxisAlignment: CrossAxisAlignment.center,
+                                              children: [
+                                                Text(
+                                                  'Wins: ${state.soloQRank?.wins ?? 0}',
+                                                  style: TextStyle(
+                                                    color: Colors.blueAccent,
+                                                    fontFamily: CustomFonts.get.oxygen_bold,
+                                                    fontSize: 16,
+                                                  ),
+                                                ),
+                                                SizedBox(width: 8),
+                                                Text(
+                                                  'Losses: ${state.soloQRank?.losses ?? 0}',
+                                                  style: TextStyle(
+                                                    color: Colors.blueAccent,
+                                                    fontFamily: CustomFonts.get.oxygen_bold,
+                                                    fontSize: 16,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                            Text(
+                                              'Win Rate: ${((state.soloQRank?.wins ?? 0) / ((state.soloQRank?.wins ?? 0) + (state.soloQRank?.losses ?? 0)) * 100).toInt()}%',
+                                              style: TextStyle(
+                                                color: Colors.blueAccent,
+                                                fontFamily: CustomFonts.get.oxygen_bold,
+                                                fontSize: 16,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
                                     ],
                                   ),
-                                  // Logo en la esquina superior derecha
-                                  Image.asset(
-                                    CustomImages.get.logo,
-                                    width: isSmallScreen ? 50 : 70, // Ajustar el tamaño del logo
-                                    height: isSmallScreen ? 50 : 70,
-                                  ),
-                                ],
-                              ),
-                              SizedBox(height: 20), // Espacio entre las secciones
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  // Sección SoloQ
-                                  Expanded(
-                                    child: Column(
-                                      children: [
-                                        ConstrainedBox(
-                                          constraints: BoxConstraints(
-                                            maxHeight: isSmallScreen
-                                                ? MediaQuery.of(context).size.height * 0.25
-                                                : MediaQuery.of(context).size.height * 0.3, // Ajustar la altura máxima
-                                          ),
-                                          child: Image.asset(
-                                            soloQImagePath,
-                                            width: isSmallScreen
-                                                ? MediaQuery.of(context).size.width * 0.35
-                                                : MediaQuery.of(context).size.width * 0.4, // Ajustar el ancho
-                                            errorBuilder: (context, error, stackTrace) {
-                                              // Mensaje de depuración
-                                              print('Error loading SoloQ image: $error');
-                                              return Image.asset('images/default.png'); // Imagen de fallback
-                                            },
-                                          ),
-                                        ),
-                                        // Datos SoloQ
-                                        if (soloQUnranked)
-                                          Text(
-                                            'SoloQ Rank: unranked',
-                                            style: TextStyle(
-                                              color: Colors.blueAccent,
-                                              fontFamily: CustomFonts.get.oxygen_bold,
-                                              fontSize: isSmallScreen ? 14 : 16, // Ajustar el tamaño de la fuente
-                                            ),
-                                          )
-                                        else
-                                          Column(
-                                            children: [
-                                              Text(
-                                                'SoloQ Rank: ${state.soloQRank?.tier} ${state.soloQRank?.rank} ${state.soloQRank?.leaguePoints} LPs',
-                                                style: TextStyle(
-                                                  color: Colors.blueAccent,
-                                                  fontFamily: CustomFonts.get.oxygen_bold,
-                                                  fontSize: isSmallScreen ? 14 : 16, // Ajustar el tamaño de la fuente
-                                                ),
-                                              ),
-                                              Row(
-                                                mainAxisAlignment: MainAxisAlignment.center,
-                                                crossAxisAlignment: CrossAxisAlignment.center,
-                                                children: [
-                                                  Text(
-                                                    'Wins: ${state.soloQRank?.wins ?? 0}',
-                                                    style: TextStyle(
-                                                      color: Colors.blueAccent,
-                                                      fontFamily: CustomFonts.get.oxygen_bold,
-                                                      fontSize: isSmallScreen ? 14 : 16, // Ajustar el tamaño de la fuente
-                                                    ),
-                                                  ),
-                                                  SizedBox(width: 8), // Ajustar el espacio
-                                                  Text(
-                                                    'Losses: ${state.soloQRank?.losses ?? 0}',
-                                                    style: TextStyle(
-                                                      color: Colors.blueAccent,
-                                                      fontFamily: CustomFonts.get.oxygen_bold,
-                                                      fontSize: isSmallScreen ? 14 : 16, // Ajustar el tamaño de la fuente
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                              Text(
-                                                'Win Rate: ${((state.soloQRank?.wins ?? 0) / ((state.soloQRank?.wins ?? 0) + (state.soloQRank?.losses ?? 0)) * 100).toInt()}%',
-                                                style: TextStyle(
-                                                  color: Colors.blueAccent,
-                                                  fontFamily: CustomFonts.get.oxygen_bold,
-                                                  fontSize: isSmallScreen ? 14 : 16, // Ajustar el tamaño de la fuente
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                      ],
-                                    ),
-                                  ),
-                                  SizedBox(width: 10), // Ajustar el espacio entre SoloQ y FlexQ
-                                  // Sección FlexQ
-                                  Expanded(
-                                    child: Column(
-                                      children: [
-                                        ConstrainedBox(
-                                          constraints: BoxConstraints(
-                                            maxHeight: isSmallScreen
-                                                ? MediaQuery.of(context).size.height * 0.25
-                                                : MediaQuery.of(context).size.height * 0.3, // Ajustar la altura máxima
-                                          ),
-                                          child: Image.asset(
-                                            flexQImagePath,
-                                            width: isSmallScreen
-                                                ? MediaQuery.of(context).size.width * 0.35
-                                                : MediaQuery.of(context).size.width * 0.4, // Ajustar el ancho
-                                            errorBuilder: (context, error, stackTrace) {
-                                              // Mensaje de depuración
-                                              print('Error loading FlexQ image: $error');
-                                              return Image.asset('images/default.png'); // Imagen de fallback
-                                            },
-                                          ),
-                                        ),
-                                        // Datos FlexQ
-                                        if (flexQUnranked)
-                                          Text(
-                                            'FlexQ Rank: unranked',
-                                            style: TextStyle(
-                                              color: Colors.blueAccent,
-                                              fontFamily: CustomFonts.get.oxygen_bold,
-                                              fontSize: isSmallScreen ? 14 : 16, // Ajustar el tamaño de la fuente
-                                            ),
-                                          )
-                                        else
-                                          Column(
-                                            children: [
-                                              Text(
-                                                'FlexQ Rank: ${state.flexQRank?.tier} ${state.flexQRank?.rank} ${state.flexQRank?.leaguePoints} LPs',
-                                                style: TextStyle(
-                                                  color: Colors.blueAccent,
-                                                  fontFamily: CustomFonts.get.oxygen_bold,
-                                                  fontSize: isSmallScreen ? 14 : 16, // Ajustar el tamaño de la fuente
-                                                ),
-                                              ),
-                                              Row(
-                                                mainAxisAlignment: MainAxisAlignment.center,
-                                                crossAxisAlignment: CrossAxisAlignment.center,
-                                                children: [
-                                                  Text(
-                                                    'Wins: ${state.flexQRank?.wins ?? 0}',
-                                                    style: TextStyle(
-                                                      color: Colors.blueAccent,
-                                                      fontFamily: CustomFonts.get.oxygen_bold,
-                                                      fontSize: isSmallScreen ? 14 : 16, // Ajustar el tamaño de la fuente
-                                                    ),
-                                                  ),
-                                                  SizedBox(width: 8), // Ajustar el espacio
-                                                  Text(
-                                                    'Losses: ${state.flexQRank?.losses ?? 0}',
-                                                    style: TextStyle(
-                                                      color: Colors.blueAccent,
-                                                      fontFamily: CustomFonts.get.oxygen_bold,
-                                                      fontSize: isSmallScreen ? 14 : 16, // Ajustar el tamaño de la fuente
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                              Text(
-                                                'Win Rate: ${((state.flexQRank?.wins ?? 0) / ((state.flexQRank?.wins ?? 0) + (state.flexQRank?.losses ?? 0)) * 100).toInt()}%',
-                                                style: TextStyle(
-                                                  color: Colors.blueAccent,
-                                                  fontFamily: CustomFonts.get.oxygen_bold,
-                                                  fontSize: isSmallScreen ? 14 : 16, // Ajustar el tamaño de la fuente
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              SizedBox(height: 20), // Espacio entre las secciones y el botón de refrescar
-                              ElevatedButton(
-                                onPressed: () {
-                                  Modular.to.pushNamed('/match_history');
-                                },
-                                child: Text(
-                                  'Ver historial de partidas',
-                                  style: TextStyle(color: Colors.white), // Establecer el color del texto a blanco
                                 ),
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.blueAccent,
+                                SizedBox(width: 20),
+                                Expanded(
+                                  child: Column(
+                                    children: [
+                                      Text(
+                                        'FLEX Q',
+                                        style: TextStyle(
+                                          color: Colors.blueAccent,
+                                          fontFamily: CustomFonts.get.oxygen_bold,
+                                          fontSize: 24,
+                                        ),
+                                      ),
+                                      SizedBox(height: 10),
+                                      ConstrainedBox(
+                                        constraints: BoxConstraints(
+                                          maxHeight: MediaQuery.of(context).size.height * 0.3,
+                                        ),
+                                        child: Image.asset(
+                                          flexQImagePath,
+                                          width: MediaQuery.of(context).size.width * 0.4,
+                                          errorBuilder: (context, error, stackTrace) {
+                                            print('Error loading FlexQ image: $error');
+                                            return Image.asset('images/default.png');
+                                          },
+                                        ),
+                                      ),
+                                      SizedBox(height: 10),
+                                      if (flexQUnranked)
+                                        Text(
+                                          'unranked',
+                                          style: TextStyle(
+                                            color: Colors.blueAccent,
+                                            fontFamily: CustomFonts.get.oxygen_bold,
+                                            fontSize: 16,
+                                          ),
+                                        )
+                                      else
+                                        Column(
+                                          children: [
+                                            Text(
+                                              '${state.flexQRank?.tier} ${state.flexQRank?.rank} ${state.flexQRank?.leaguePoints} LPs',
+                                              style: TextStyle(
+                                                color: Colors.blueAccent,
+                                                fontFamily: CustomFonts.get.oxygen_bold,
+                                                fontSize: 16,
+                                              ),
+                                            ),
+                                            Row(
+                                              mainAxisAlignment: MainAxisAlignment.center,
+                                              crossAxisAlignment: CrossAxisAlignment.center,
+                                              children: [
+                                                Text(
+                                                  'Wins: ${state.flexQRank?.wins ?? 0}',
+                                                  style: TextStyle(
+                                                    color: Colors.blueAccent,
+                                                    fontFamily: CustomFonts.get.oxygen_bold,
+                                                    fontSize: 16,
+                                                  ),
+                                                ),
+                                                SizedBox(width: 8),
+                                                Text(
+                                                  'Losses: ${state.flexQRank?.losses ?? 0}',
+                                                  style: TextStyle(
+                                                    color: Colors.blueAccent,
+                                                    fontFamily: CustomFonts.get.oxygen_bold,
+                                                    fontSize: 16,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                            Text(
+                                              'Win Rate: ${((state.flexQRank?.wins ?? 0) / ((state.flexQRank?.wins ?? 0) + (state.flexQRank?.losses ?? 0)) * 100).toInt()}%',
+                                              style: TextStyle(
+                                                color: Colors.blueAccent,
+                                                fontFamily: CustomFonts.get.oxygen_bold,
+                                                fontSize: 16,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                    ],
+                                  ),
                                 ),
-                              ),
-                            ],
-                          );
-                        },
+                              ],
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 16.0),
+                        child: Align(
+                          alignment: Alignment.bottomCenter,
+                          child: ElevatedButton(
+                            onPressed: () {
+                              Modular.to.pushNamed('/match_history');
+                            },
+                            child: Text(
+                              'Ver historial de partidas',
+                              style: TextStyle(color: Colors.white),
+                            ),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.blueAccent,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               );

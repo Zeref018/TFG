@@ -56,23 +56,31 @@ class AccountGetters {
 
   Future<QueueData?> getRank(String id, {bool isSoloQ = true}) async {
     http.Response response;
-    QueueData? queueData;
 
     response = await PhpApiRepository().get(function: MapKeys.function.get_rank, uri: '/$id?api_key=${GeneralConfiguration.get.api_key}');
 
-    if (response.statusCode == ResponseCodes.get.success) {
+
+    if (response.statusCode == 200) {
       List queueData = json.decode(response.body) as List;
-      if (queueData.isNotEmpty && isSoloQ) {
-        return QueueData.fromMap(queueData[0]);
-      } else if (queueData.length > 1 && !isSoloQ) {
-        return QueueData.fromMap(queueData[1]);
-      } else {
-        return null;
+      QueueData? soloQData;
+      QueueData? flexQData;
+
+      for (var data in queueData) {
+        if (data['queueType'] == 'RANKED_SOLO_5x5') {
+          soloQData = QueueData.fromMap(data);
+        } else if (data['queueType'] == 'RANKED_FLEX_SR') {
+          flexQData = QueueData.fromMap(data);
+        }
       }
 
+      if (isSoloQ) {
+        return soloQData;
+      } else {
+        return flexQData;
+      }
     }
 
-    return queueData;
+    return null;
   }
 
   Future<List<String>?> getGames(String uuid) async {
