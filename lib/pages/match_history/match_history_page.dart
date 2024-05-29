@@ -1,15 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_modular/flutter_modular.dart';
 import 'package:tfg/base_cubit/base_cubit.dart';
-import 'package:tfg/constants/custom_colors.dart';
 import 'package:tfg/enums/page_status_enum.dart';
 import 'package:tfg/models/excel_exporter.dart';
 import 'package:tfg/widgets/loader.dart';
 import 'package:tfg/repositories/preferences_repository.dart';
 import 'cubit/match_history_cubit.dart';
 import 'package:tfg/models/participant_details.dart';
-import 'package:tfg/models/match_details.dart';
 import 'package:tfg/constants/custom_images.dart';
 import 'package:tfg/constants/memory.dart';
 
@@ -144,7 +141,12 @@ class _MatchHistoryPageState extends State<MatchHistoryPage> {
                                                       ),
                                                     ),
                                                     if (_expanded[index])
-                                                      ..._buildExpandedDetails(match.participants),
+                                                      Column(
+                                                        children: [
+                                                          _buildExpandedDetailsHeader(),
+                                                          ..._buildExpandedDetails(match.participants),
+                                                        ],
+                                                      ),
                                                   ],
                                                 );
                                               },
@@ -186,6 +188,30 @@ class _MatchHistoryPageState extends State<MatchHistoryPage> {
     );
   }
 
+  Widget _buildExpandedDetailsHeader() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4.0),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(width: 32), // Espacio para la imagen del campeón
+          SizedBox(width: 8),
+          Expanded(child: Text('Summoner Name', style: TextStyle(color: Colors.white, fontSize: 14))),
+          SizedBox(width: 8),
+          Expanded(child: Text('K/D/A', style: TextStyle(color: Colors.white, fontSize: 14))),
+          SizedBox(width: 8),
+          Expanded(child: Text('KDA', style: TextStyle(color: Colors.white, fontSize: 14))),
+          SizedBox(width: 8),
+          Expanded(child: Text('Damage', style: TextStyle(color: Colors.white, fontSize: 14))),
+          SizedBox(width: 8),
+          Expanded(child: Text('Minions', style: TextStyle(color: Colors.white, fontSize: 14))),
+          SizedBox(width: 8),
+          Expanded(child: Text('Items', style: TextStyle(color: Colors.white, fontSize: 14))),
+        ],
+      ),
+    );
+  }
+
   List<Widget> _buildExpandedDetails(List<ParticipantDetails> participants) {
     return participants.map((participant) {
       return Padding(
@@ -199,41 +225,26 @@ class _MatchHistoryPageState extends State<MatchHistoryPage> {
               height: 32,
             ),
             SizedBox(width: 8),
+            Expanded(child: Text(participant.summonerName, style: TextStyle(color: Colors.white, fontSize: 12))),
+            SizedBox(width: 8),
+            Expanded(child: Text('${participant.kills}/${participant.deaths}/${participant.assists}', style: TextStyle(color: Colors.white, fontSize: 12))),
+            SizedBox(width: 8),
+            Expanded(child: Text('${((participant.kills + participant.assists) / (participant.deaths > 0 ? participant.deaths : 1)).toStringAsFixed(2)}', style: TextStyle(color: Colors.white, fontSize: 12))),
+            SizedBox(width: 8),
+            Expanded(child: Text('${participant.totalDamageDealtToChampions}', style: TextStyle(color: Colors.white, fontSize: 12))),
+            SizedBox(width: 8),
+            Expanded(child: Text('${participant.totalMinionsKilled}', style: TextStyle(color: Colors.white, fontSize: 12))),
+            SizedBox(width: 8),
             Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              child: Row(
                 children: [
-                  Text(
-                    participant.summonerName,
-                    style: TextStyle(color: Colors.white, fontSize: 14),
-                  ),
-                  Text(
-                    'K/D/A: ${participant.kills}/${participant.deaths}/${participant.assists}',
-                    style: TextStyle(color: Colors.white, fontSize: 12),
-                  ),
-                  Text(
-                    'KDA: ${((participant.kills + participant.assists) / (participant.deaths > 0 ? participant.deaths : 1)).toStringAsFixed(2)}',
-                    style: TextStyle(color: Colors.white, fontSize: 12),
-                  ),
-                  Text(
-                    'Damage Dealt: ${participant.totalDamageDealtToChampions}',
-                    style: TextStyle(color: Colors.white, fontSize: 12),
-                  ),
-                  Text(
-                    'Minions Killed: ${participant.totalMinionsKilled}',
-                    style: TextStyle(color: Colors.white, fontSize: 12),
-                  ),
-                  Row(
-                    children: [
-                      _buildItemIcon(participant.item0),
-                      _buildItemIcon(participant.item1),
-                      _buildItemIcon(participant.item2),
-                      _buildItemIcon(participant.item3),
-                      _buildItemIcon(participant.item4),
-                      _buildItemIcon(participant.item5),
-                      _buildItemIcon(participant.item6),
-                    ],
-                  ),
+                  _buildItemIcon(participant.item0),
+                  _buildItemIcon(participant.item1),
+                  _buildItemIcon(participant.item2),
+                  _buildItemIcon(participant.item3),
+                  _buildItemIcon(participant.item4),
+                  _buildItemIcon(participant.item5),
+                  _buildItemIcon(participant.item6),
                 ],
               ),
             ),
