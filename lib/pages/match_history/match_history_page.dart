@@ -44,7 +44,7 @@ class _MatchHistoryPageState extends State<MatchHistoryPage> {
                 return const Loader();
               }
 
-              if (_expanded.length != state.matchDetails?.length) {
+              if (state.matchDetails != null && _expanded.length != state.matchDetails!.length) {
                 _expanded = List<bool>.filled(state.matchDetails!.length, false);
               }
 
@@ -117,39 +117,35 @@ class _MatchHistoryPageState extends State<MatchHistoryPage> {
                                                       (p) => p.riotIdGameName == username && p.riotIdTagline == hashtag,
                                                   orElse: () => match.participants[0],
                                                 );
-                                                return Card(
-                                                  color: currentUserParticipant.win ? Colors.green[100] : Colors.red[100],
-                                                  margin: EdgeInsets.symmetric(vertical: 8.0),
-                                                  child: Padding(
-                                                    padding: const EdgeInsets.all(16.0),
-                                                    child: Column(
-                                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                                      children: [
-                                                        Text(
-                                                          'Duration: ${match.gameDuration} seconds',
-                                                          style: TextStyle(fontSize: 16, color: Colors.black),
+                                                return Column(
+                                                  children: [
+                                                    Card(
+                                                      color: currentUserParticipant.win ? Colors.green[100] : Colors.red[100],
+                                                      margin: EdgeInsets.symmetric(vertical: 8.0),
+                                                      child: Padding(
+                                                        padding: const EdgeInsets.all(16.0),
+                                                        child: Column(
+                                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                                          children: [
+                                                            _buildParticipantCard(currentUserParticipant, username, hashtag, match.participants, match.gameDuration),
+                                                            TextButton(
+                                                              onPressed: () {
+                                                                setState(() {
+                                                                  _expanded[index] = !_expanded[index];
+                                                                });
+                                                              },
+                                                              child: Text(
+                                                                _expanded[index] ? 'Hide Details' : 'Show Details',
+                                                                style: TextStyle(color: Colors.blueAccent),
+                                                              ),
+                                                            ),
+                                                          ],
                                                         ),
-                                                        SizedBox(height: 8),
-                                                        _buildParticipantCard(currentUserParticipant, username, hashtag, match.participants),
-                                                        SizedBox(height: 8),
-                                                        TextButton(
-                                                          onPressed: () {
-                                                            setState(() {
-                                                              _expanded[index] = !_expanded[index];
-                                                            });
-                                                          },
-                                                          child: Text(
-                                                            _expanded[index] ? 'Hide Details' : 'Show Details',
-                                                            style: TextStyle(color: Colors.blueAccent),
-                                                          ),
-                                                        ),
-                                                        if (_expanded[index])
-                                                          Column(
-                                                            children: _buildParticipantRows(match.participants, username, hashtag),
-                                                          ),
-                                                      ],
+                                                      ),
                                                     ),
-                                                  ),
+                                                    if (_expanded[index])
+                                                      ..._buildExpandedDetails(match.participants),
+                                                  ],
                                                 );
                                               },
                                             ),
@@ -157,7 +153,9 @@ class _MatchHistoryPageState extends State<MatchHistoryPage> {
                                             Text('No match details available', style: TextStyle(color: Colors.white)),
                                           ElevatedButton(
                                             onPressed: () {
-                                              exportToExcel(context, username, hashtag, state.matchDetails!);
+                                              if (state.matchDetails != null) {
+                                                exportToExcel(context, username, hashtag, state.matchDetails!);
+                                              }
                                             },
                                             child: Text(
                                               'Download Excel',
@@ -188,79 +186,233 @@ class _MatchHistoryPageState extends State<MatchHistoryPage> {
     );
   }
 
-  List<Widget> _buildParticipantRows(List<ParticipantDetails> participants, String username, String hashtag) {
-    return [
-      Wrap(
-        spacing: 16.0,
-        runSpacing: 16.0,
-        children: participants.map((participant) {
-          return _buildParticipantIcon(participant);
-        }).toList(),
-      ),
-    ];
-  }
-
-  Widget _buildParticipantIcon(ParticipantDetails participant) {
-    return Column(
-      children: [
-        Image.network(
-          'https://ddragon.leagueoflegends.com/cdn/${M.patch}/img/champion/${participant.championName}.png',
-          width: 32,
-          height: 32,
-        ),
-        SizedBox(height: 4),
-        Text(
-          participant.summonerName,
-          style: TextStyle(fontSize: 12, color: Colors.white),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildParticipantCard(ParticipantDetails participant, String username, String hashtag, List<ParticipantDetails> matchParticipants) {
-    bool isCurrentUser = (participant.riotIdGameName == username && participant.riotIdTagline == hashtag);
-
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Column(
+  List<Widget> _buildExpandedDetails(List<ParticipantDetails> participants) {
+    return participants.map((participant) {
+      return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 4.0),
+        child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
-              children: [
-                Image.network(
-                  'https://ddragon.leagueoflegends.com/cdn/${M.patch}/img/champion/${participant.championName}.png',
-                  width: 40,
-                  height: 40,
-                ),
-                SizedBox(width: 8),
-                Text(
-                  participant.summonerName,
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: isCurrentUser ? Color(0xFFDAA520) : Colors.white,
-                  ),
-                ),
-              ],
+            Image.network(
+              'https://ddragon.leagueoflegends.com/cdn/${M.patch}/img/champion/${participant.championName}.png',
+              width: 32,
+              height: 32,
             ),
-            SizedBox(height: 4),
-            Row(
-              children: [
-                _buildItemIcon(participant.item0),
-                _buildItemIcon(participant.item1),
-                _buildItemIcon(participant.item2),
-                _buildItemIcon(participant.item3),
-                _buildItemIcon(participant.item4),
-                _buildItemIcon(participant.item5),
-                _buildItemIcon(participant.item6),
-              ],
+            SizedBox(width: 8),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    participant.summonerName,
+                    style: TextStyle(color: Colors.white, fontSize: 14),
+                  ),
+                  Text(
+                    'K/D/A: ${participant.kills}/${participant.deaths}/${participant.assists}',
+                    style: TextStyle(color: Colors.white, fontSize: 12),
+                  ),
+                  Text(
+                    'KDA: ${((participant.kills + participant.assists) / (participant.deaths > 0 ? participant.deaths : 1)).toStringAsFixed(2)}',
+                    style: TextStyle(color: Colors.white, fontSize: 12),
+                  ),
+                  Text(
+                    'Damage Dealt: ${participant.totalDamageDealtToChampions}',
+                    style: TextStyle(color: Colors.white, fontSize: 12),
+                  ),
+                  Text(
+                    'Minions Killed: ${participant.totalMinionsKilled}',
+                    style: TextStyle(color: Colors.white, fontSize: 12),
+                  ),
+                  Row(
+                    children: [
+                      _buildItemIcon(participant.item0),
+                      _buildItemIcon(participant.item1),
+                      _buildItemIcon(participant.item2),
+                      _buildItemIcon(participant.item3),
+                      _buildItemIcon(participant.item4),
+                      _buildItemIcon(participant.item5),
+                      _buildItemIcon(participant.item6),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ],
         ),
-        Spacer(),
-        Column(
-          children: _buildParticipantRows(matchParticipants, username, hashtag),
+      );
+    }).toList();
+  }
+
+  Widget _buildParticipantCard(ParticipantDetails participant, String username, String hashtag, List<ParticipantDetails> matchParticipants, int gameDuration) {
+    bool isCurrentUser = (participant.riotIdGameName == username && participant.riotIdTagline == hashtag);
+    final minutes = (gameDuration ~/ 60).toString().padLeft(2, '0');
+    final seconds = (gameDuration % 60).toString().padLeft(2, '0');
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Image.network(
+                      'https://ddragon.leagueoflegends.com/cdn/${M.patch}/img/champion/${participant.championName}.png',
+                      width: 60,
+                      height: 60,
+                    ),
+                    SizedBox(width: 8),
+                    Text(
+                      participant.summonerName,
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color: isCurrentUser ? Color(0xFFDAA520) : Colors.white,
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 8),
+                Row(
+                  children: [
+                    _buildItemIcon(participant.item0),
+                    _buildItemIcon(participant.item1),
+                    _buildItemIcon(participant.item2),
+                    _buildItemIcon(participant.item3),
+                    _buildItemIcon(participant.item4),
+                    _buildItemIcon(participant.item5),
+                    _buildItemIcon(participant.item6),
+                  ],
+                ),
+              ],
+            ),
+            Spacer(),
+            Expanded(
+              flex: 3,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Damage per Minute',
+                              style: TextStyle(color: Colors.black, fontSize: 14),
+                            ),
+                            Text(
+                              participant.damagePerMinute.toStringAsFixed(1),
+                              style: TextStyle(color: Colors.black, fontSize: 14),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'K/D/A',
+                              style: TextStyle(color: Colors.black, fontSize: 14),
+                            ),
+                            Text(
+                              '${participant.kills}/${participant.deaths}/${participant.assists}',
+                              style: TextStyle(color: Colors.black, fontSize: 14),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'KDA',
+                              style: TextStyle(color: Colors.black, fontSize: 14),
+                            ),
+                            Text(
+                              ((participant.kills + participant.assists) / (participant.deaths > 0 ? participant.deaths : 1)).toStringAsFixed(2),
+                              style: TextStyle(color: Colors.black, fontSize: 14),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Minions Killed',
+                              style: TextStyle(color: Colors.black, fontSize: 14),
+                            ),
+                            Text(
+                              participant.totalMinionsKilled.toString(),
+                              style: TextStyle(color: Colors.black, fontSize: 14),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Game Duration',
+                              style: TextStyle(color: Colors.black, fontSize: 14),
+                            ),
+                            Text(
+                              '$minutes:$seconds',
+                              style: TextStyle(color: Colors.black, fontSize: 14),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            Spacer(),
+            Column(
+              children: List.generate(5, (i) {
+                return Row(
+                  children: [
+                    if (i < matchParticipants.length)
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 1.0),
+                        child: Image.network(
+                          'https://ddragon.leagueoflegends.com/cdn/${M.patch}/img/champion/${matchParticipants[i].championName}.png',
+                          width: 32,
+                          height: 32,
+                        ),
+                      ),
+                    if (i + 5 < matchParticipants.length)
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 1.0),
+                        child: Image.network(
+                          'https://ddragon.leagueoflegends.com/cdn/${M.patch}/img/champion/${matchParticipants[i + 5].championName}.png',
+                          width: 32,
+                          height: 32,
+                        ),
+                      ),
+                  ],
+                );
+              }),
+            ),
+          ],
         ),
       ],
     );
@@ -268,10 +420,13 @@ class _MatchHistoryPageState extends State<MatchHistoryPage> {
 
   Widget _buildItemIcon(int itemId) {
     if (itemId == 0) return Container();
-    return Image.network(
-      'https://ddragon.leagueoflegends.com/cdn/${M.patch}/img/item/$itemId.png',
-      width: 32,
-      height: 32,
+    return Padding(
+      padding: const EdgeInsets.all(2.0),
+      child: Image.network(
+        'https://ddragon.leagueoflegends.com/cdn/${M.patch}/img/item/$itemId.png',
+        width: 24,
+        height: 24,
+      ),
     );
   }
 }
