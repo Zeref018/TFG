@@ -27,6 +27,7 @@ dev_dependencies:
     sdk: flutter
   flutter_lints: ^4.0.0
   build_runner: ^2.4.6
+  flutter_launcher_icons: ^0.9.2
 
 flutter:
   generate: true
@@ -59,10 +60,14 @@ flutter:
     - images/logo.png
     # Asegúrate de que esta lista incluya todas las imágenes que necesitas
 
-
-
-
 flutter_intl:
   enabled: true
   class_name: AppLocalizations
   main_locale: en
+
+flutter_icons:
+  android: true
+  ios: true
+  windows: true
+  macos: true
+  image_path: "images/logo.png" # Asegúrate de que esta es la ruta correcta a tu icono

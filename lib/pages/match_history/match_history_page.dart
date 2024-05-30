@@ -117,6 +117,14 @@ class _MatchHistoryPageState extends State<MatchHistoryPage> {
                                                       (p) => p.riotIdGameName == username && p.riotIdTagline == hashtag,
                                                   orElse: () => match.participants[0],
                                                 );
+                                                final team1 = match.participants.where((p) => p.teamId == 100).toList();
+                                                final team2 = match.participants.where((p) => p.teamId == 200).toList();
+                                                final team1TotalDamage = team1.fold(0, (sum, p) => sum + p.totalDamageDealtToChampions);
+                                                final team2TotalDamage = team2.fold(0, (sum, p) => sum + p.totalDamageDealtToChampions);
+                                                final totalDamage = team1TotalDamage + team2TotalDamage;
+                                                final team1Percentage = (team1TotalDamage / totalDamage);
+                                                final team2Percentage = (team2TotalDamage / totalDamage);
+
                                                 return Column(
                                                   children: [
                                                     Card(
@@ -164,7 +172,36 @@ class _MatchHistoryPageState extends State<MatchHistoryPage> {
                                                       Column(
                                                         children: [
                                                           _buildExpandedDetailsHeader(),
-                                                          ..._buildExpandedDetails(match.participants),
+                                                          Column(
+                                                            children: _buildExpandedDetails(team1),
+                                                          ),
+                                                          SizedBox(height: 16),
+                                                          Row(
+                                                            mainAxisAlignment: MainAxisAlignment.center,
+                                                            children: [
+                                                              Text(
+                                                                '${(team1Percentage * 100).toStringAsFixed(1)}%',
+                                                                style: TextStyle(color: Colors.blueAccent),
+                                                              ),
+                                                              SizedBox(width: 8),
+                                                              Expanded(
+                                                                child: LinearProgressIndicator(
+                                                                  value: team1Percentage,
+                                                                  backgroundColor: Colors.redAccent.withOpacity(0.5),
+                                                                  valueColor: AlwaysStoppedAnimation<Color>(Colors.blueAccent.withOpacity(0.5)),
+                                                                ),
+                                                              ),
+                                                              SizedBox(width: 8),
+                                                              Text(
+                                                                '${(team2Percentage * 100).toStringAsFixed(1)}%',
+                                                                style: TextStyle(color: Colors.redAccent),
+                                                              ),
+                                                            ],
+                                                          ),
+                                                          SizedBox(height: 16),
+                                                          Column(
+                                                            children: _buildExpandedDetails(team2),
+                                                          ),
                                                         ],
                                                       ),
                                                   ],
