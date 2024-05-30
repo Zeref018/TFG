@@ -94,12 +94,15 @@ class _MatchHistoryPageState extends State<MatchHistoryPage> {
                                       String hashtag = hashtagSnapshot.data ?? '';
                                       return Column(
                                         children: [
-                                          Text(
-                                            '$username#$hashtag',
-                                            style: TextStyle(
-                                              fontSize: 20,
-                                              fontWeight: FontWeight.bold,
-                                              color: Colors.white,
+                                          FittedBox(
+                                            fit: BoxFit.scaleDown,
+                                            child: Text(
+                                              '$username#$hashtag',
+                                              style: TextStyle(
+                                                fontSize: 20,
+                                                fontWeight: FontWeight.bold,
+                                                color: Colors.white,
+                                              ),
                                             ),
                                           ),
                                           SizedBox(height: 20),
@@ -117,14 +120,31 @@ class _MatchHistoryPageState extends State<MatchHistoryPage> {
                                                 return Column(
                                                   children: [
                                                     Card(
-                                                      color: currentUserParticipant.win ? Colors.green[100] : Colors.red[100],
+                                                      color: currentUserParticipant.win
+                                                          ? Colors.blue.withOpacity(0.4)
+                                                          : Colors.red.withOpacity(0.4),
                                                       margin: EdgeInsets.symmetric(vertical: 8.0),
+                                                      shape: RoundedRectangleBorder(
+                                                        borderRadius: BorderRadius.circular(15),
+                                                      ),
                                                       child: Padding(
                                                         padding: const EdgeInsets.all(16.0),
                                                         child: Column(
                                                           crossAxisAlignment: CrossAxisAlignment.start,
                                                           children: [
-                                                            _buildParticipantCard(currentUserParticipant, username, hashtag, match.participants, match.gameDuration),
+                                                            LayoutBuilder(
+                                                              builder: (context, constraints) {
+                                                                final bool isMobile = constraints.maxWidth < 600;
+                                                                return _buildParticipantCard(
+                                                                  currentUserParticipant,
+                                                                  username,
+                                                                  hashtag,
+                                                                  match.participants,
+                                                                  match.gameDuration,
+                                                                  isMobile,
+                                                                );
+                                                              },
+                                                            ),
                                                             TextButton(
                                                               onPressed: () {
                                                                 setState(() {
@@ -236,16 +256,19 @@ class _MatchHistoryPageState extends State<MatchHistoryPage> {
             Expanded(child: Text('${participant.totalMinionsKilled}', style: TextStyle(color: Colors.white, fontSize: 12))),
             SizedBox(width: 8),
             Expanded(
-              child: Row(
-                children: [
-                  _buildItemIcon(participant.item0),
-                  _buildItemIcon(participant.item1),
-                  _buildItemIcon(participant.item2),
-                  _buildItemIcon(participant.item3),
-                  _buildItemIcon(participant.item4),
-                  _buildItemIcon(participant.item5),
-                  _buildItemIcon(participant.item6),
-                ],
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: [
+                    _buildItemIcon(participant.item0),
+                    _buildItemIcon(participant.item1),
+                    _buildItemIcon(participant.item2),
+                    _buildItemIcon(participant.item3),
+                    _buildItemIcon(participant.item4),
+                    _buildItemIcon(participant.item5),
+                    _buildItemIcon(participant.item6),
+                  ],
+                ),
               ),
             ),
           ],
@@ -254,7 +277,7 @@ class _MatchHistoryPageState extends State<MatchHistoryPage> {
     }).toList();
   }
 
-  Widget _buildParticipantCard(ParticipantDetails participant, String username, String hashtag, List<ParticipantDetails> matchParticipants, int gameDuration) {
+  Widget _buildParticipantCard(ParticipantDetails participant, String username, String hashtag, List<ParticipantDetails> matchParticipants, int gameDuration, bool isMobile) {
     bool isCurrentUser = (participant.riotIdGameName == username && participant.riotIdTagline == hashtag);
     final minutes = (gameDuration ~/ 60).toString().padLeft(2, '0');
     final seconds = (gameDuration % 60).toString().padLeft(2, '0');
@@ -262,7 +285,101 @@ class _MatchHistoryPageState extends State<MatchHistoryPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
+        isMobile
+            ? Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Image.network(
+                  'https://ddragon.leagueoflegends.com/cdn/${M.patch}/img/champion/${participant.championName}.png',
+                  width: 60,
+                  height: 60,
+                ),
+                SizedBox(width: 8),
+                Text(
+                  participant.summonerName,
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: isCurrentUser ? Color(0xFFDAA520) : Colors.white,
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: 8),
+            Row(
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('Damage per Minute', style: TextStyle(color: Colors.white, fontSize: 12)),
+                      Text(participant.damagePerMinute.toStringAsFixed(1), style: TextStyle(color: Colors.white, fontSize: 12)),
+                    ],
+                  ),
+                ),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('K/D/A', style: TextStyle(color: Colors.white, fontSize: 12)),
+                      Text('${participant.kills}/${participant.deaths}/${participant.assists}', style: TextStyle(color: Colors.white, fontSize: 12)),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            Row(
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('KDA', style: TextStyle(color: Colors.white, fontSize: 12)),
+                      Text(((participant.kills + participant.assists) / (participant.deaths > 0 ? participant.deaths : 1)).toStringAsFixed(2), style: TextStyle(color: Colors.white, fontSize: 12)),
+                    ],
+                  ),
+                ),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('Minions Killed', style: TextStyle(color: Colors.white, fontSize: 12)),
+                      Text(participant.totalMinionsKilled.toString(), style: TextStyle(color: Colors.white, fontSize: 12)),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            Row(
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('Game Duration', style: TextStyle(color: Colors.white, fontSize: 12)),
+                      Text('$minutes:$seconds', style: TextStyle(color: Colors.white, fontSize: 12)),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: 8),
+            Row(
+              children: [
+                _buildItemIcon(participant.item0),
+                _buildItemIcon(participant.item1),
+                _buildItemIcon(participant.item2),
+                _buildItemIcon(participant.item3),
+                _buildItemIcon(participant.item4),
+                _buildItemIcon(participant.item5),
+                _buildItemIcon(participant.item6),
+              ],
+            ),
+          ],
+        )
+            : Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Column(
@@ -312,14 +429,8 @@ class _MatchHistoryPageState extends State<MatchHistoryPage> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
-                              'Damage per Minute',
-                              style: TextStyle(color: Colors.black, fontSize: 14),
-                            ),
-                            Text(
-                              participant.damagePerMinute.toStringAsFixed(1),
-                              style: TextStyle(color: Colors.black, fontSize: 14),
-                            ),
+                            Text('Damage per Minute', style: TextStyle(color: Colors.white, fontSize: 14)),
+                            Text(participant.damagePerMinute.toStringAsFixed(1), style: TextStyle(color: Colors.white, fontSize: 14)),
                           ],
                         ),
                       ),
@@ -327,14 +438,8 @@ class _MatchHistoryPageState extends State<MatchHistoryPage> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
-                              'K/D/A',
-                              style: TextStyle(color: Colors.black, fontSize: 14),
-                            ),
-                            Text(
-                              '${participant.kills}/${participant.deaths}/${participant.assists}',
-                              style: TextStyle(color: Colors.black, fontSize: 14),
-                            ),
+                            Text('K/D/A', style: TextStyle(color: Colors.white, fontSize: 14)),
+                            Text('${participant.kills}/${participant.deaths}/${participant.assists}', style: TextStyle(color: Colors.white, fontSize: 14)),
                           ],
                         ),
                       ),
@@ -346,14 +451,8 @@ class _MatchHistoryPageState extends State<MatchHistoryPage> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
-                              'KDA',
-                              style: TextStyle(color: Colors.black, fontSize: 14),
-                            ),
-                            Text(
-                              ((participant.kills + participant.assists) / (participant.deaths > 0 ? participant.deaths : 1)).toStringAsFixed(2),
-                              style: TextStyle(color: Colors.black, fontSize: 14),
-                            ),
+                            Text('KDA', style: TextStyle(color: Colors.white, fontSize: 14)),
+                            Text(((participant.kills + participant.assists) / (participant.deaths > 0 ? participant.deaths : 1)).toStringAsFixed(2), style: TextStyle(color: Colors.white, fontSize: 14)),
                           ],
                         ),
                       ),
@@ -361,14 +460,8 @@ class _MatchHistoryPageState extends State<MatchHistoryPage> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
-                              'Minions Killed',
-                              style: TextStyle(color: Colors.black, fontSize: 14),
-                            ),
-                            Text(
-                              participant.totalMinionsKilled.toString(),
-                              style: TextStyle(color: Colors.black, fontSize: 14),
-                            ),
+                            Text('Minions Killed', style: TextStyle(color: Colors.white, fontSize: 14)),
+                            Text(participant.totalMinionsKilled.toString(), style: TextStyle(color: Colors.white, fontSize: 14)),
                           ],
                         ),
                       ),
@@ -380,14 +473,8 @@ class _MatchHistoryPageState extends State<MatchHistoryPage> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
-                              'Game Duration',
-                              style: TextStyle(color: Colors.black, fontSize: 14),
-                            ),
-                            Text(
-                              '$minutes:$seconds',
-                              style: TextStyle(color: Colors.black, fontSize: 14),
-                            ),
+                            Text('Game Duration', style: TextStyle(color: Colors.white, fontSize: 14)),
+                            Text('$minutes:$seconds', style: TextStyle(color: Colors.white, fontSize: 14)),
                           ],
                         ),
                       ),

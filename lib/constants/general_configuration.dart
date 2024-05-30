@@ -15,5 +15,5 @@ class GeneralConfiguration {
 
   bool get errors_log => kReleaseMode ? false : true;
 
-  String get api_key => 'RGAPI-9d531169-d57d-4e86-9a00-4a6c3581da1b';
+  String get api_key => 'RGAPI-00829320-09fc-4b4b-9b55-e344ee7037e3';
 }
