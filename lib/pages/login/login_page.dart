@@ -105,9 +105,10 @@ class LoginPage extends StatelessWidget {
                                   Expanded(
                                     child: ElevatedButton(
                                       style: ButtonStyle(
-                                          backgroundColor: WidgetStateProperty.all<Color>(Colors.blueAccent),
-                                          shape: WidgetStateProperty.all<RoundedRectangleBorder>(
-                                              RoundedRectangleBorder(borderRadius: BorderRadius.circular(18.0)))),
+                                          backgroundColor: MaterialStateProperty.all<Color>(Colors.blueAccent),
+                                          shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+
+                                          RoundedRectangleBorder(borderRadius: BorderRadius.circular(18.0)))),
                                       onPressed: () async {
                                         await ReadContext(context).read<LoginCubit>().login() ? Modular.to.pushNamed(HomePage.route) : null;
                                       },

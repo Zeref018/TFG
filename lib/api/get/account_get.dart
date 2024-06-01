@@ -130,6 +130,7 @@ class AccountGetters {
 //YSKM #Zrf
 //QUΑNDALE DlNGLE #EUW
 //ejecutar en web: flutter run -d chrome --web-browser-flag "--disable-web-security"
+//add patch macos: PATH=$HOME/Developments/flutter/bin:$PATH
 
 //imagenes: https://ddragon.leagueoflegends.com/cdn/14.10.1/img/champion/Aatrox.png
 //icono de la cuenta: https://ddragon.leagueoflegends.com/cdn/14.10.1/img/profileicon/6330.png
