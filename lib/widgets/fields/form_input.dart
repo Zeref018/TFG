@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:tfg/constants/custom_colors.dart';
+
 import 'package:tfg/constants/custom_fonts.dart';
 
 class FormInput extends StatelessWidget {

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:tfg/constants/custom_colors.dart';
+
 import 'package:tfg/constants/custom_fonts.dart';
 import 'package:tfg/constants/custom_images.dart';
 import 'package:tfg/enums/page_status_enum.dart';
@@ -105,8 +105,8 @@ class LoginPage extends StatelessWidget {
                                   Expanded(
                                     child: ElevatedButton(
                                       style: ButtonStyle(
-                                          backgroundColor: MaterialStateProperty.all<Color>(Colors.blueAccent),
-                                          shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                                          backgroundColor: WidgetStateProperty.all<Color>(Colors.blueAccent),
+                                          shape: WidgetStateProperty.all<RoundedRectangleBorder>(
                                               RoundedRectangleBorder(borderRadius: BorderRadius.circular(18.0)))),
                                       onPressed: () async {
                                         await ReadContext(context).read<LoginCubit>().login() ? Modular.to.pushNamed(HomePage.route) : null;

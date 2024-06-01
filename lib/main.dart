@@ -3,7 +3,7 @@ import 'package:tfg/base_cubit/base_cubit.dart';
 import 'package:tfg/constants/memory.dart';
 import 'package:tfg/modules/app_module.dart';
 import 'package:tfg/pages/home/home_page.dart';
-import 'package:tfg/pages/match_history/match_history_page.dart'; // Importa la página de historial de partidas
+
 import 'package:tfg/repositories/preferences_repository.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_modular/flutter_modular.dart';
